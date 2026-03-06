@@ -1,0 +1,39 @@
+<!-- =================================================================== -->
+<!-- ClickHouse — Configuração Cascata (modo Shelter / single node)     -->
+<!-- Ref: SAD §C (Observabilidade), TASK PR-7                          -->
+<!-- =================================================================== -->
+<clickhouse>
+
+    <!-- Logging -->
+    <logger>
+        <level>warning</level>
+        <console>true</console>
+    </logger>
+
+    <!-- Limites de memória para Shelter mode (384MB container limit) -->
+    <max_server_memory_usage_to_ram_ratio>0.8</max_server_memory_usage_to_ram_ratio>
+    <max_memory_usage>268435456</max_memory_usage> <!-- 256MB -->
+
+    <!-- Limites de query para segurança -->
+    <max_query_size>262144</max_query_size> <!-- 256KB -->
+    <max_result_rows>100000</max_result_rows>
+    <max_execution_time>30</max_execution_time>
+
+    <!-- Single node: desabilitar replicação -->
+    <interserver_http_port>9009</interserver_http_port>
+
+    <!-- Performance tuning para single node -->
+    <max_concurrent_queries>20</max_concurrent_queries>
+    <background_pool_size>2</background_pool_size>
+    <background_schedule_pool_size>2</background_schedule_pool_size>
+
+    <!-- Merge tree settings -->
+    <merge_tree>
+        <max_bytes_to_merge_at_max_space_in_pool>536870912</max_bytes_to_merge_at_max_space_in_pool>
+        <number_of_free_entries_in_pool_to_execute_mutation>5</number_of_free_entries_in_pool_to_execute_mutation>
+    </merge_tree>
+
+    <!-- Timezone -->
+    <timezone>UTC</timezone>
+
+</clickhouse>

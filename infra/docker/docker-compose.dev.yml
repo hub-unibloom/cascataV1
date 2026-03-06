@@ -1,0 +1,3 @@
+# Docker Compose — Desenvolvimento local (cascata dev)
+# Implementação: PR-2 (variante dev).
+version: "3.9"

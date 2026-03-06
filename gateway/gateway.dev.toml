@@ -1,0 +1,26 @@
+# =============================================================================
+# Cascata Gateway — Configuração de Desenvolvimento (Shelter Mode)
+# =============================================================================
+# Este arquivo é para desenvolvimento local com Docker Compose Shelter.
+# Em produção: TLS habilitado, upstream resolve via Tenant Router.
+# =============================================================================
+
+# Endereço de escuta HTTP
+listen_addr = "0.0.0.0:8080"
+
+# Endereço de escuta HTTPS (desabilitado em dev)
+tls_addr = "0.0.0.0:8443"
+
+# Endereço do health check
+health_addr = "0.0.0.0:8081"
+
+# Upstream — YSQL Connection Manager
+[upstream]
+host = "yugabytedb"
+port = 5433
+
+# TLS — desabilitado em dev
+[tls]
+enabled = false
+cert_path = ""
+key_path = ""

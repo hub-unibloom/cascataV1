@@ -1,0 +1,183 @@
+# =============================================================================
+# Vector.dev — Collector de Observabilidade do Cascata
+# =============================================================================
+# Pipeline: App (OTel SDK) → Vector → VictoriaMetrics (métricas)
+#                                   → ClickHouse (logs/traces)
+#
+# Ref: SAD §C (Infra Plane — Observabilidade), TASK PR-7
+# =============================================================================
+
+# ===========================================================================
+# DATA DIRECTORY
+# ===========================================================================
+data_dir = "/var/lib/vector"
+
+# ===========================================================================
+# SOURCES — De onde Vector coleta dados
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# Logs do Docker — captura stdout/stderr de todos os containers Cascata
+# ---------------------------------------------------------------------------
+[sources.docker_logs]
+type = "docker_logs"
+docker_host = "unix:///var/run/docker.sock"
+include_containers = [
+  "cascata-yugabytedb",
+  "cascata-dragonflydb",
+  "cascata-redpanda",
+  "cascata-clickhouse",
+  "cascata-openbao",
+  "cascata-pgcat",
+  "cascata-victoriametrics",
+  "cascata-gateway",
+  "cascata-control-plane",
+]
+
+# ---------------------------------------------------------------------------
+# OpenTelemetry — recebe traces, métricas e logs via OTLP gRPC
+# Control Plane (Go) e Gateway (Rust) enviam OTel via este endpoint
+# ---------------------------------------------------------------------------
+[sources.otel_logs]
+type = "opentelemetry"
+grpc.address = "0.0.0.0:4317"
+http.address = "0.0.0.0:4318"
+
+# ---------------------------------------------------------------------------
+# Métricas internas do Vector — health do próprio collector
+# ---------------------------------------------------------------------------
+[sources.vector_internal]
+type = "internal_metrics"
+
+# ---------------------------------------------------------------------------
+# Host metrics — CPU, memória, disco da VPS (Shelter mode)
+# ---------------------------------------------------------------------------
+[sources.host_metrics]
+type = "host_metrics"
+collectors = ["cpu", "memory", "disk", "network"]
+scrape_interval_secs = 30
+
+# ---------------------------------------------------------------------------
+# PGCAT Metrics — Prometheus Exporter (Req-3.5.7/3.5.10)
+# Conexões ativas, queues, tempos e hit rates da porta 9930.
+# ---------------------------------------------------------------------------
+[sources.pgcat_metrics]
+type = "prometheus_scrape"
+endpoints = ["http://cascata-pgcat:9930/metrics"]
+scrape_interval_secs = 15
+
+# ===========================================================================
+# TRANSFORMS — Processamento e enriquecimento
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# Processar logs do Docker: extrair service name, nível, limpar formato
+# ---------------------------------------------------------------------------
+[transforms.parse_docker_logs]
+type = "remap"
+inputs = ["docker_logs"]
+source = """
+# Extrair nome do serviço a partir do container name
+.service = replace(to_string(.container_name) ?? "unknown", "cascata-", "")
+
+# Tentar parsear como JSON (logs estruturados do CP e Gateway)
+parsed, err = parse_json(.message)
+if err == null {
+  .level = to_string(parsed.level) ?? "info"
+  .trace_id = to_string(parsed.trace_id) ?? ""
+  .span_id = to_string(parsed.span_id) ?? ""
+  .tenant_id = to_string(parsed.tenant_id) ?? null
+  .msg = to_string(parsed.msg) ?? to_string(parsed.message) ?? .message
+  .attributes = encode_json(parsed)
+} else {
+  # Log não-JSON (YugabyteDB, ClickHouse, etc.)
+  .level = "info"
+  .trace_id = ""
+  .span_id = ""
+  .tenant_id = null
+  .msg = .message
+  .attributes = "{}"
+}
+
+# Normalizar timestamp
+.timestamp = .timestamp ?? now()
+"""
+
+# ---------------------------------------------------------------------------
+# Filtro: remover logs de debug em produção (configurável por env)
+# Em dev/Shelter: passa tudo
+# ---------------------------------------------------------------------------
+[transforms.filter_logs]
+type = "filter"
+inputs = ["parse_docker_logs"]
+condition = """
+level = to_string(.level) ?? "info"
+level != "debug" || (to_string(get_env_var("CASCATA_LOG_LEVEL") ?? "debug") == "debug")
+"""
+
+# ---------------------------------------------------------------------------
+# Sanitizar: remover dados sensíveis dos logs (Regra 5.5)
+# Logs NUNCA contêm: tokens JWT, API keys, senhas, CPF, campos pii:true
+# ---------------------------------------------------------------------------
+[transforms.sanitize_logs]
+type = "remap"
+inputs = ["filter_logs"]
+source = """
+# Mascarar patterns de JWT (eyJ...)
+.msg = replace(to_string(.msg) ?? "", r'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+', "[JWT_REDACTED]")
+
+# Mascarar API keys (padrão cascata_key_...)
+.msg = replace(.msg, r'cascata_key_[a-zA-Z0-9]+', "[API_KEY_REDACTED]")
+
+# Mascarar possíveis passwords em query strings
+.msg = replace(.msg, r'password=[^&\s]+', "password=[REDACTED]")
+
+# Mascarar possíveis CPFs (11 dígitos)
+.msg = replace(.msg, r'\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b', "[CPF_REDACTED]")
+"""
+
+# ===========================================================================
+# SINKS — Para onde Vector envia os dados processados
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# ClickHouse — logs e traces (OLAP)
+# Tabela: cascata_logs.system_logs (criada na inicialização)
+# ---------------------------------------------------------------------------
+[sinks.clickhouse_logs]
+type = "clickhouse"
+inputs = ["sanitize_logs"]
+endpoint = "http://clickhouse:8123"
+database = "cascata_logs"
+table = "system_logs"
+auth.strategy = "basic"
+auth.user = "cascata"
+auth.password = "cascata_dev_ch_2025"  # Dev mode. Produção: via OpenBao
+
+# Batch: acumular antes de enviar (eficiência)
+batch.max_events = 500
+batch.timeout_secs = 5
+
+# Encoding dos campos para match com a tabela ClickHouse
+encoding.timestamp_format = "unix"
+
+# ---------------------------------------------------------------------------
+# VictoriaMetrics — métricas de sistema (Prometheus-compatible)
+# ---------------------------------------------------------------------------
+[sinks.victoriametrics]
+type = "prometheus_remote_write"
+inputs = ["host_metrics", "vector_internal", "pgcat_metrics"]
+endpoint = "http://victoriametrics:8428/api/v1/write"
+
+# Batch
+batch.max_events = 1000
+batch.timeout_secs = 10
+
+# ---------------------------------------------------------------------------
+# Console — debug local (desabilitável em produção)
+# ---------------------------------------------------------------------------
+[sinks.console_debug]
+type = "console"
+inputs = ["sanitize_logs"]
+encoding.codec = "json"
+# TODO: Desabilitar em produção via condition ou env var

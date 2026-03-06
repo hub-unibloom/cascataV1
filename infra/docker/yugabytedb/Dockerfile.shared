@@ -1,0 +1,41 @@
+# =============================================================================
+# cascata/yugabytedb:shared
+# =============================================================================
+# Imagem enxuta para os tiers NANO e MICRO operando em cluster compartilhado.
+# Contém: Extensões nativas + pg_cron.
+# Exclui proativamente PostGIS para manter footprint minúsculo.
+#
+# YugabyteDB 2.25+ já inclui suporte binário a 'pg_cron' nativamente em 
+# seu distribution pacote oficial, não necessitando compilação manual de código-fonte.
+#
+# Ref: SAD §Extension Profile System
+# Ref: SRS Req-2.20.1
+# =============================================================================
+
+ARG YB_VERSION=2025.1.3.2-b1
+FROM yugabytedb/yugabyte:${YB_VERSION}
+
+LABEL maintainer="Cascata Platform <infra@cascata.dev>"
+LABEL description="cascata/yugabytedb:shared — NANO/MICRO cluster compartilhado (lean footprint)"
+LABEL org.opencontainers.image.source="https://github.com/cascata-platform/cascata"
+LABEL cascata.image.variant="shared"
+LABEL cascata.extensions.cat1="uuid-ossp,pgcrypto,pg_trgm,hstore,citext,ltree,intarray,unaccent,fuzzystrmatch,pg_stat_statements,pgaudit,postgres_fdw,dblink,plpgsql"
+LABEL cascata.extensions.cat2="pg_cron"
+# pgaudit         — Auditoria de operações SQL
+# postgres_fdw    — Foreign Data Wrapper para PostgreSQL externo
+# dblink          — Conexões a bancos externos
+# plpgsql         — Linguagem procedural padrão
+#
+# Extensão Cat.2 — Pré-compilada nativa:
+# pg_cron
+#
+# Extensão Cat.4 (pgvector) — BLOQUEADA em todas as imagens.
+# -------------------------------------------------------
+
+# Configurar shared_preload_libraries
+# pg_cron e pgaudit precisam estar no preload para funcionar
+ENV YB_TSERVER_FLAGS="ysql_pg_conf_csv=\"shared_preload_libraries='pg_cron,pg_stat_statements,pgaudit'\""
+
+# Nenhuma ferramenta de compilação presente neste stage.
+
+# O entrypoint do YugabyteDB é herdado da imagem base

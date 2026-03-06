@@ -1,0 +1,38 @@
+# ==============================================================================
+# Pré-requisitos Cascata V1 — AlmaLinux 9 (Host Exclusivo de Produção)
+# ==============================================================================
+# Cole este bloco inteiro no terminal do servidor AlmaLinux 9 recém-instalado.
+# Ele fará todo o trâmite de atualização de Kernel, instalação do Docker 
+# e reiniciará o servidor.
+# ==============================================================================
+
+# 1. Atualizar todo o sistema operacional para a última versão estável
+sudo dnf update -y
+sudo dnf upgrade -y
+
+# 2. Instalar dependências vitais de rede e versionamento
+sudo dnf install -y dnf-plugins-core curl wget git
+
+# 3. Adicionar o repositório oficial do Docker (via base CentOS/RHEL)
+sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+# 4. Instalar Docker Engine, CLI, Containerd e o plugin Docker Compose oficial
+sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+# 5. Habilitar Docker para iniciar com a máquina e inciar o serviço agora
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# 6. Adicionar seu usuário ao grupo do Docker para não precisar de 'sudo' no dia a dia
+sudo usermod -aG docker $USER
+
+# 7. Reiniciar o servidor 
+# O reboot é estritamente necessário para que:
+# - Atualizações base de Kernel 5.14+ entrem em vigor.
+# - As novas permissões do grupo do Docker sejam aplicadas à sua sessão.
+sudo dnf install -y nano
+nano install.sh
+chmod +x install.sh
+echo "Preparação concluída. O servidor reiniciará em 5 segundos."
+sleep 7
+sudo reboot

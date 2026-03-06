@@ -1,0 +1,59 @@
+# =============================================================================
+# Cascata Control Plane — Configuração de Desenvolvimento (Shelter Mode)
+# =============================================================================
+# Este arquivo é para desenvolvimento local com Docker Compose Shelter.
+# Em produção, cada campo sensível referencia OpenBao paths.
+# Env vars podem substituir qualquer campo: CASCATA_<SECTION>_<FIELD>
+# =============================================================================
+
+control_db:
+  host: "yugabytedb"
+  port: 5433
+  database: "cascata_control"
+  user: "yugabyte"
+  password_bao_path: ""           # Dev: sem senha. Produção: "secret/cascata/cp/db_password"
+  ssl_mode: "disable"
+  max_conns: 10
+  min_conns: 2
+  conn_timeout: 10s
+
+cache:
+  host: "dragonflydb"
+  port: 6379
+  password_bao_path: ""
+  db: 0
+  pool_size: 10
+  read_timeout: 3s
+  write_timeout: 3s
+
+analytics:
+  host: "clickhouse"
+  http_port: 8123
+  native_port: 9001                # Remapped: 9000→9001 no Shelter (conflito com YB tserver)
+  database: "cascata_logs"
+  user: "cascata"
+  password_bao_path: ""           # Dev: "cascata_dev_ch_2025". Produção: OpenBao
+
+event_stream:
+  brokers:
+    - "redpanda:29092"
+  schema_registry: "http://redpanda:8081"
+  admin_api: "http://redpanda:9644"
+
+kms:
+  address: "http://openbao:8200"
+  token_path: "/etc/cascata/bao-token"
+  mount_path: "secret/"
+  tls_insecure: true              # Dev only. Produção: false + mTLS
+
+tiers:
+  default_tier: "NANO"
+  shared_cluster: "shared"
+  max_nano_tenants: 200
+  max_micro_tenants: 50
+
+http:
+  addr: ":9090"
+  read_timeout: 15s
+  write_timeout: 15s
+  shutdown_timeout: 15s

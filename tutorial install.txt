@@ -1,0 +1,394 @@
+================================================================================
+ CASCATA V1 — TUTORIAL DE INSTALAÇÃO
+ Ambiente de Desenvolvimento Local
+================================================================================
+
+ Pré-requisitos do sistema operacional
+ (instalar ANTES de qualquer passo abaixo)
+
+================================================================================
+
+1. Docker Engine (versão 24+)
+   https://docs.docker.com/engine/install/
+
+   # Ubuntu/Debian:
+   curl -fsSL https://get.docker.com | sh
+   sudo usermod -aG docker $USER
+   # Sair e entrar novamente no terminal para aplicar grupo
+
+   # Verificar:
+   docker --version
+   # Esperado: Docker version 24.x ou superior
+
+
+2. Docker Compose v2 (plugin do Docker, NÃO o docker-compose standalone)
+   Já vem com Docker Engine 24+. Verificar:
+
+   docker compose version
+   # Esperado: Docker Compose version v2.x
+
+
+3. Git
+   sudo apt install git -y   # Ubuntu/Debian
+   # ou
+   sudo yum install git -y   # CentOS/RHEL
+
+   git --version
+
+
+4. Go 1.23+ (para o Control Plane)
+   https://go.dev/dl/
+
+   # Baixar e instalar (ajustar versão conforme disponível):
+   wget https://go.dev/dl/go1.23.6.linux-amd64.tar.gz
+   sudo rm -rf /usr/local/go
+   sudo tar -C /usr/local -xzf go1.23.6.linux-amd64.tar.gz
+
+   # Adicionar ao PATH (colocar no ~/.bashrc ou ~/.zshrc):
+   export PATH=$PATH:/usr/local/go/bin
+   export GOPATH=$HOME/go
+   export PATH=$PATH:$GOPATH/bin
+
+   # Verificar:
+   go version
+   # Esperado: go version go1.23.x linux/amd64
+
+
+5. Rust + Cargo (para o Gateway Pingora)
+   https://rustup.rs/
+
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   # Escolher opção 1 (default)
+   source $HOME/.cargo/env
+
+   # Verificar:
+   rustc --version
+   cargo --version
+   # Esperado: rustc 1.8x.x
+
+
+6. Node.js 20+ e npm (para o Dashboard SvelteKit e SDKs)
+   https://nodejs.org/
+
+   # Via nvm (recomendado):
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+   source ~/.bashrc
+   nvm install 20
+   nvm use 20
+
+   # Verificar:
+   node --version   # Esperado: v20.x
+   npm --version    # Esperado: 10.x
+
+
+================================================================================
+
+ Clonar o projeto e verificar estrutura
+
+================================================================================
+
+git clone https://github.com/hub-unibloom/cascataV1.git
+# Verificar que a estrutura do monorepo está completa:
+tree -L 2 --dirsfirst
+
+# Esperado:
+# ├── control-plane/   (Go — Control Plane)
+# ├── dashboard/       (SvelteKit — Painel do operador)
+# ├── gateway/         (Rust/Pingora — Data Plane)
+# ├── infra/           (Docker, K8s, Cilium)
+# ├── scripts/         (Automação)
+# ├── sdk/             (TypeScript SDKs + CLI)
+# ├── SRS_CascataV1.md
+# ├── SAD_CascataV1.md
+# ├── Roadmap_48_Implementacoes_Cascata.md
+# └── TASK_Fase0_Alicerce_Invisivel.md
+
+
+================================================================================
+
+ PASSO 1 — Construir imagens Docker do YugabyteDB
+
+================================================================================
+
+As imagens customizadas do YugabyteDB incluem extensões compiladas
+que não vêm na imagem oficial. São duas variantes:
+
+  :shared — para cluster compartilhado NANO/MICRO (lean)
+  :full   — para instâncias dedicadas STANDARD+ (completa)
+
+# Construir imagem :shared (Cat.1 nativas + pg_cron)
+cd /home/cocorico/projetossz/cascataV1
+docker build \
+  -t cascata/yugabytedb:shared \
+  -f infra/docker/yugabytedb/Dockerfile.shared \
+  .
+
+# Construir imagem :full (tudo do :shared + PostGIS)
+docker build \
+  -t cascata/yugabytedb:full \
+  -f infra/docker/yugabytedb/Dockerfile.full \
+  .
+
+# Verificar que ambas foram criadas:
+docker images | grep cascata/yugabytedb
+# Esperado:
+# cascata/yugabytedb   shared   ...   <tamanho>
+# cascata/yugabytedb   full     ...   <tamanho>
+
+# NOTA: O build do :full pode levar 10-20 minutos na primeira vez
+# por causa da extração/compilação do ecosistema PostGIS.
+
+
+================================================================================
+
+ PASSO 2 — Subir o ambiente Shelter (modo desenvolvimento)
+
+================================================================================
+
+O modo Shelter é o ambiente mínimo que roda todos os serviços
+com ~1.5GB de RAM real. Ideal para desenvolvimento e VPS $20/mês.
+
+# Navegar até o diretório do Docker Compose:
+cd /home/cocorico/projetossz/cascataV1/infra/docker
+
+# Subir todos os serviços:
+docker compose -f docker-compose.shelter.yml up -d
+
+# Acompanhar os logs (todos os serviços):
+docker compose -f docker-compose.shelter.yml logs -f
+
+# Ou logs de um serviço específico:
+docker compose -f docker-compose.shelter.yml logs -f yugabytedb
+docker compose -f docker-compose.shelter.yml logs -f pgcat
+docker compose -f docker-compose.shelter.yml logs -f clickhouse
+
+# Verificar que todos os serviços estão saudáveis:
+docker compose -f docker-compose.shelter.yml ps
+
+# Esperado: todos com STATUS "Up" e "(healthy)"
+# NOTA: YugabyteDB pode levar ~30s para ficar healthy na primeira vez.
+# Serviços com depends_on (pgcat, vector, gateway, control-plane)
+# só sobem após suas dependências ficarem healthy.
+
+
+================================================================================
+
+ PASSO 3 — Verificar serviços individualmente
+
+================================================================================
+
+Após o `docker compose up -d`, verificar cada serviço:
+
+# --- YugabyteDB (YSQL) ---
+# Conectar via ysqlsh:
+docker exec -it cascata-yugabytedb bin/ysqlsh
+# No prompt, digitar:
+#   SELECT version();
+#   \q
+
+# Ou direto:
+docker exec cascata-yugabytedb bin/ysqlsh -c "SELECT version();"
+
+# Master UI (browser):
+# http://localhost:7100
+
+
+# --- DragonflyDB ---
+docker exec cascata-dragonflydb redis-cli ping
+# Esperado: PONG
+
+docker exec cascata-dragonflydb redis-cli INFO server | head -5
+
+
+# --- Redpanda ---
+docker exec cascata-redpanda rpk cluster health
+# Esperado: "Healthy: true"
+
+docker exec cascata-redpanda rpk topic list
+# Esperado: (vazio por enquanto)
+
+
+# --- ClickHouse ---
+docker exec cascata-clickhouse clickhouse-client --query "SELECT version()"
+
+# Verificar que o database cascata_logs existe:
+docker exec cascata-clickhouse clickhouse-client --query "SHOW DATABASES"
+# Esperado: inclui "cascata_logs"
+
+
+# --- OpenBao ---
+# Health check:
+curl -s http://localhost:8200/v1/sys/health | python3 -m json.tool
+# Esperado: JSON com "initialized": true, "sealed": false
+
+
+# O pooler YSQL CM embutido usa a porta 5433
+docker exec cascata-yugabytedb bin/ysqlsh -p 5433 -c "SELECT 1"
+# Esperado: "accepting connections"
+
+# Métricas Prometheus:
+curl -s http://localhost:9930/metrics | head -20
+
+
+# --- VictoriaMetrics ---
+curl -s http://localhost:8428/health
+# Esperado: vazio (200 OK)
+
+curl -s "http://localhost:8428/api/v1/query?query=up"
+# Esperado: JSON com dados de métricas
+
+
+# --- Vector ---
+curl -s http://localhost:8686/health
+# Esperado: JSON com status
+
+
+================================================================================
+
+ PASSO 4 — Verificar uso de memória (modo Shelter)
+
+================================================================================
+
+# Ver uso de RAM por container:
+docker stats --no-stream --format "table {{.Name}}\t{{.MemUsage}}\t{{.MemPerc}}\t{{.NetIO}}"
+
+# O total de RAM real deve estar abaixo de 1.5GB.
+# Os limits são tetos (não uso real):
+#
+#   yugabytedb       — limit 900MB  (uso real ~400-600MB)
+#   dragonflydb      — limit 128MB  (uso real ~20-40MB)
+#   redpanda         — limit 256MB  (uso real ~100-150MB)
+#   clickhouse       — limit 384MB  (uso real ~50-100MB)
+#   openbao          — limit 64MB   (uso real ~20-30MB)
+#   yugabytedb       — limit 900MB  (uso real ~450MB com YSQL CM)
+#   victoriametrics  — limit 128MB  (uso real ~30-50MB)
+#   gateway          — limit 48MB   (uso real ~10-20MB)
+#   control-plane    — limit 32MB   (uso real ~10-20MB)
+
+
+================================================================================
+
+ Comandos úteis do dia a dia
+
+================================================================================
+
+# Parar todos os serviços:
+cd /home/cocorico/projetossz/cascataV1/infra/docker
+docker compose -f docker-compose.shelter.yml down
+
+# Parar e REMOVER volumes (⚠️ apaga todos os dados!):
+docker compose -f docker-compose.shelter.yml down -v
+
+# Reiniciar um serviço específico:
+docker compose -f docker-compose.shelter.yml restart pgcat
+
+# Ver logs em tempo real de um serviço:
+docker compose -f docker-compose.shelter.yml logs -f --tail=50 yugabytedb
+
+# Entrar no shell de um container:
+docker exec -it cascata-yugabytedb bash
+docker exec -it cascata-clickhouse bash
+
+# Reconstruir imagem e reiniciar (após mudanças no código):
+docker compose -f docker-compose.shelter.yml up -d --build gateway
+docker compose -f docker-compose.shelter.yml up -d --build control-plane
+
+
+================================================================================
+
+ Conectar ao YugabyteDB de fora do Docker
+
+================================================================================
+
+# Via psql (se instalado na máquina host):
+psql -h localhost -p 5433 -U yugabyte
+
+# Via ysqlsh dentro do container:
+docker exec -it cascata-yugabytedb bin/ysqlsh
+
+# Via YSQL CM (pooled, porta 5433):
+psql -h localhost -p 5433 -U cascata_pool_user -d cascata_shared
+
+# NOTA: Em desenvolvimento, as senhas podem estar em modo permissivo.
+# Em produção, todas as senhas vêm do OpenBao.
+
+
+================================================================================
+
+ Portas expostas (resumo)
+
+================================================================================
+
+  Serviço           Porta    Protocolo    Uso
+  ─────────────     ─────    ─────────    ──────────────────────────────
+  YugabyteDB        5433     YSQL         Conexão PostgreSQL
+  YugabyteDB        7100     HTTP         Master Web UI
+  YugabyteDB        9000     HTTP         TServer Web UI
+  YugabyteDB        15433    YSQL         Admin SQL
+  DragonflyDB       6379     Redis        Cache
+  Redpanda          9092     Kafka        Streaming de eventos
+  Redpanda          8081     HTTP         Schema Registry
+  Redpanda          8082     HTTP         Pandaproxy (REST)
+  Redpanda          9644     HTTP         Admin API
+  ClickHouse        8123     HTTP         HTTP interface
+  ClickHouse        9001     Native       Native interface (remapped)
+  OpenBao           8200     HTTP         Secrets API
+  yugabytedb        5433     PostgreSQL   YSQL Connection Manager
+  yugabytedb        15433    HTTP         YSQL CM Metrics
+  Vector            8686     HTTP         Vector API
+  VictoriaMetrics   8428     HTTP         Prometheus-compatible API
+  Gateway           8080     HTTP         API (HTTP)
+  Gateway           8443     HTTPS        API (HTTPS)
+  Control Plane     9090     HTTP         Management API
+
+
+================================================================================
+
+ Troubleshooting
+
+================================================================================
+
+PROBLEMA: Container não sobe / reinicia em loop
+  docker compose -f docker-compose.shelter.yml logs <nome-servico>
+  # Verificar mensagens de erro nos logs.
+  # Causa comum: porta já em uso por outro processo.
+  sudo lsof -i :<porta>
+
+PROBLEMA: YugabyteDB demora para ficar healthy
+  # Normal na primeira inicialização (~30-60s).
+  # Se persistir, verificar RAM disponível:
+  free -h
+  # Precisa de pelo menos 2GB livres.
+
+PROBLEMA: Timeout de conexão no gateway
+  # Gateway depende do YugabyteDB na 5433.
+  docker compose -f docker-compose.shelter.yml logs gatewaymory)
+  # Verificar qual container foi morto:
+  dmesg | grep -i "killed process"
+  # Solução: aumentar swap ou reduzir serviços não essenciais.
+  # Modo Shelter foi desenhado para 2GB minimum.
+
+PROBLEMA: Conflito de porta (porta já em uso)
+  # Verificar o que está usando a porta:
+  sudo ss -tlnp | grep <porta>
+  # Parar o processo conflitante ou remapear no docker-compose.
+
+
+================================================================================
+
+ Próximos passos após instalação
+
+================================================================================
+
+Após subir o ambiente com sucesso, os próximos PRs do TASK file são:
+
+  PR-5  — Skeleton do Control Plane (Go): go mod init, Chi router, health
+  PR-6  — Skeleton do Gateway (Rust): Cargo init, Pingora pipeline
+  PR-7  — Pipeline de observabilidade: OTel, Vector, VictoriaMetrics configs
+  PR-8  — DDL do banco do Control Plane: CREATE TABLE no YugabyteDB
+  PR-9  — DDL de inicialização de tenant: schemas, roles, permissões
+  PR-10 — Configuração do YSQL CM: pools nativos, timeouts estruturados
+
+Consulte: /home/cocorico/projetossz/cascataV1/TASK_Fase0_Alicerce_Invisivel.md
+
+================================================================================
