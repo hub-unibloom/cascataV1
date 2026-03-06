@@ -28,7 +28,6 @@ include_containers = [
   "cascata-redpanda",
   "cascata-clickhouse",
   "cascata-openbao",
-  "cascata-pgcat",
   "cascata-victoriametrics",
   "cascata-gateway",
   "cascata-control-plane",
@@ -57,14 +56,7 @@ type = "host_metrics"
 collectors = ["cpu", "memory", "disk", "network"]
 scrape_interval_secs = 30
 
-# ---------------------------------------------------------------------------
-# PGCAT Metrics — Prometheus Exporter (Req-3.5.7/3.5.10)
-# Conexões ativas, queues, tempos e hit rates da porta 9930.
-# ---------------------------------------------------------------------------
-[sources.pgcat_metrics]
-type = "prometheus_scrape"
-endpoints = ["http://cascata-pgcat:9930/metrics"]
-scrape_interval_secs = 15
+
 
 # ===========================================================================
 # TRANSFORMS — Processamento e enriquecimento
@@ -166,7 +158,7 @@ encoding.timestamp_format = "unix"
 # ---------------------------------------------------------------------------
 [sinks.victoriametrics]
 type = "prometheus_remote_write"
-inputs = ["host_metrics", "vector_internal", "pgcat_metrics"]
+inputs = ["host_metrics", "vector_internal"]
 endpoint = "http://victoriametrics:8428/api/v1/write"
 
 # Batch

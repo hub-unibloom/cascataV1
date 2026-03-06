@@ -10,9 +10,7 @@
         <console>true</console>
     </logger>
 
-    <!-- Limites de memória para Shelter mode (384MB container limit) -->
-    <max_server_memory_usage_to_ram_ratio>0.8</max_server_memory_usage_to_ram_ratio>
-    <max_memory_usage>268435456</max_memory_usage> <!-- 256MB -->
+    <!-- Limites de query mudados para o users.xml ou omitidos por default -->
 
     <!-- Limites de query mudados para o users.xml ou omitidos por default -->
 
