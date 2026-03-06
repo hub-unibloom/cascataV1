@@ -20,8 +20,9 @@ RUN go mod download 2>/dev/null || true
 
 # Copiar código e compilar
 COPY . .
-RUN go mod tidy 2>/dev/null || true
+RUN go mod tidy
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -mod=mod \
     -ldflags="-s -w -X github.com/cascata-platform/cascata/control-plane/internal/server.Version=$(cat VERSION 2>/dev/null || echo 0.1.0)" \
     -o cascata-cp \
     ./cmd/cascata-cp/

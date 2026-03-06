@@ -1,109 +1,132 @@
+  7b. cascata/yugabytedb:full (Cat.1 + pg_cron + PostGIS)
+  → Isto pode levar 15-25 minutos na primeira vez...
+  ⚠ Ram host detectada: 1905MB. Forçando MAKEFLAGS=-j2 para evitar OOM fatal do GCC.
+#11 exporting manifest list sha256:098b92487e76c0e4ebd532691cdb93a4c8d48907cbe259003304ec79944ec1d4 0.0s done
+#11 naming to docker.io/cascata/yugabytedb:full done
+#11 unpacking to docker.io/cascata/yugabytedb:full
+#11 unpacking to docker.io/cascata/yugabytedb:full 0.3s done
+#11 DONE 1.4s
   ✔ cascata/yugabytedb:full construída
 
 
   Imagens Cascata disponíveis:
 cascata/yugabytedb:full	2.74GB	2 seconds ago
-cascata/yugabytedb:shared	2.71GB	9 days ago
+cascata/yugabytedb:shared	2.71GB	10 days ago
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   PASSO 8 — Subindo ambiente Shelter (modo desenvolvimento)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  → Gerando certificados auto-assinados locais para pgcat...
+  → Verificando e baixando dependências do Docker Hub (Pre-flight pull)...
+[+] pull 11/11
+ ✔ gateway         Skipped 0.0ss
+ ✔ control-plane   Skipped 0.0ss
+ ✔ Image cascat... Skipped 0.0ss
+ ✔ Image timber... Pulled  16.3s
+ ✔ Image docker... Pulled  22.5s
+ ✔ Image qdrant... Pulled  17.9s
+ ✔ Image quay.i... Pulled  18.9s
+ ✔ Image victor... Pulled  3.7ss
+ ✔ Image docker... Pulled  15.4s
+ ✔ Image centri... Pulled  5.9ss
+ ✔ Image clickh... Pulled  25.3s
   → Iniciando serviços de infraestrutura...
-[+] up 65/66
- ✔ Image victoriametrics/victoria-metrics:latest          Pulled                                                                                                                         5.3ss
- ✔ Image docker.redpanda.com/redpandadata/redpanda:latest Pulled                                                                                                                         27.8s
- ✔ Image timberio/vector:latest-alpine                    Pulled                                                                                                                         20.3s
- ✔ Image ghcr.io/postgresml/pgcat:latest                  Pulled                                                                                                                         17.7s
- ✔ Image docker.dragonflydb.io/dragonflydb/dragonfly      Pulled                                                                                                                         19.3s
- ✔ Image centrifugo/centrifugo:latest                     Pulled                                                                                                                         10.6s
- ✔ Image qdrant/qdrant:latest                             Pulled                                                                                                                         23.2s
- ✔ Image clickhouse/clickhouse-server:latest              Pulled                                                                                                                         31.8s
- ✔ Image quay.io/openbao/openbao:latest                   Pulled                                                                                                                         22.5s
-[+] Building 21.4s (29/38)                                                                                                                                                                    
- => [internal] load local bake definitions                                                                                                                                               0.0s
- => => reading from stdin 985B                                                                                                                                                           0.0s
- => [gateway internal] load build definition from Dockerfile                                                                                                                             0.2s
- => => transferring dockerfile: 1.79kB                                                                                                                                                   0.0s
- => [control-plane internal] load build definition from Dockerfile                                                                                                                       0.2s
- => => transferring dockerfile: 1.54kB                                                                                                                                                   0.0s
- => [control-plane internal] load metadata for docker.io/library/golang:1.26-alpine                                                                                                      0.5s
- => [control-plane internal] load metadata for docker.io/library/alpine:3.21                                                                                                             0.4s
- => [gateway internal] load metadata for docker.io/library/debian:bookworm-slim                                                                                                          0.3s
- => [gateway internal] load metadata for docker.io/library/rust:1.85-slim-bookworm                                                                                                       0.4s
- => [gateway internal] load .dockerignore                                                                                                                                                0.0s
- => => transferring context: 2B                                                                                                                                                          0.0s
- => [control-plane internal] load .dockerignore                                                                                                                                          0.0s
- => => transferring context: 2B                                                                                                                                                          0.0s
- => [gateway builder 1/7] FROM docker.io/library/rust:1.85-slim-bookworm@sha256:9f841bbe9e7d8e37ceb96ed907265a3a0df7f44e3737d0b100e7907a679acb36                                        20.3s
- => => resolve docker.io/library/rust:1.85-slim-bookworm@sha256:9f841bbe9e7d8e37ceb96ed907265a3a0df7f44e3737d0b100e7907a679acb36                                                         0.1s
- => => sha256:d4ceaeef95ce1795f2816135a0ffe7f89ef389cbc075611930bbd36e992de061 264.47MB / 264.47MB                                                                                       7.1s
- => => sha256:6e909acdb790c5a1989d9cfc795fda5a246ad6664bb27b5c688e2b734b2c5fad 28.20MB / 28.20MB                                                                                         1.0s
- => => extracting sha256:6e909acdb790c5a1989d9cfc795fda5a246ad6664bb27b5c688e2b734b2c5fad                                                                                                4.4s
- => => extracting sha256:d4ceaeef95ce1795f2816135a0ffe7f89ef389cbc075611930bbd36e992de061                                                                                               13.0s
- => [gateway internal] load build context                                                                                                                                                0.2s
- => => transferring context: 111.04kB                                                                                                                                                    0.0s
- => [gateway stage-1 1/6] FROM docker.io/library/debian:bookworm-slim@sha256:74d56e3931e0d5a1dd51f8c8a2466d21de84a271cd3b5a733b803aa91abf4421                                            5.4s
- => => resolve docker.io/library/debian:bookworm-slim@sha256:74d56e3931e0d5a1dd51f8c8a2466d21de84a271cd3b5a733b803aa91abf4421                                                            0.1s
- => => sha256:84a2afebaf4de2e8eb885634a69abd0087b79c947c53fa4f0481235d6dfadc6c 28.24MB / 28.24MB                                                                                         0.8s
- => => extracting sha256:84a2afebaf4de2e8eb885634a69abd0087b79c947c53fa4f0481235d6dfadc6c                                                                                                4.5s
- => [control-plane builder 1/8] FROM docker.io/library/golang:1.26-alpine@sha256:2389ebfa5b7f43eeafbd6be0c3700cc46690ef842ad962f6c5bd6be49ed82039                                       16.6s
- => => resolve docker.io/library/golang:1.26-alpine@sha256:2389ebfa5b7f43eeafbd6be0c3700cc46690ef842ad962f6c5bd6be49ed82039                                                              0.1s
- => => sha256:13ee208a3600503f47e9ec1ced0e8abb825a045473b092f1fe872b81d9873706 126B / 126B                                                                                               0.1s
- => => sha256:644a983862e3898a5575fef5c81590cbc92d1c1e1bf5f61112c0cd35e6b7be98 296.07kB / 296.07kB                                                                                       0.1s
- => => sha256:6fbff1d4eb7eece408734c05c8c63a49bb181871bc1280cff3f0e28d25a4ea28 67.22MB / 67.22MB                                                                                         2.5s
- => => extracting sha256:644a983862e3898a5575fef5c81590cbc92d1c1e1bf5f61112c0cd35e6b7be98                                                                                                0.5s
- => => extracting sha256:6fbff1d4eb7eece408734c05c8c63a49bb181871bc1280cff3f0e28d25a4ea28                                                                                               13.2s
- => => extracting sha256:13ee208a3600503f47e9ec1ced0e8abb825a045473b092f1fe872b81d9873706                                                                                                0.0s
- => => extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1                                                                                                0.0s
- => [control-plane internal] load build context                                                                                                                                          0.2s
- => => transferring context: 150.29kB                                                                                                                                                    0.0s
- => [control-plane stage-1 1/6] FROM docker.io/library/alpine:3.21@sha256:c3f8e73fdb79deaebaa2037150150191b9dcbfba68b4a46d70103204c53f4709                                               0.2s 
- => => resolve docker.io/library/alpine:3.21@sha256:c3f8e73fdb79deaebaa2037150150191b9dcbfba68b4a46d70103204c53f4709                                                                     0.1s 
- => [control-plane stage-1 2/6] RUN apk add --no-cache ca-certificates tzdata                                                                                                            1.8s 
- => [control-plane stage-1 3/6] RUN adduser -D -h /app cascata                                                                                                                           0.5s 
- => [control-plane stage-1 4/6] WORKDIR /app                                                                                                                                             0.2s 
- => [gateway stage-1 2/6] RUN apt-get update && apt-get install -y --no-install-recommends     ca-certificates     libssl3     && rm -rf /var/lib/apt/lists/*                           10.1s 
- => [gateway stage-1 3/6] RUN useradd -r -s /usr/sbin/nologin -d /app cascata                                                                                                            0.5s
- => [gateway stage-1 4/6] WORKDIR /app                                                                                                                                                   0.2s
- => [control-plane builder 2/8] RUN apk add --no-cache git ca-certificates                                                                                                               1.5s
- => [control-plane builder 3/8] WORKDIR /build                                                                                                                                           0.1s
- => [control-plane builder 4/8] COPY go.mod ./                                                                                                                                           0.0s
- => [control-plane builder 5/8] COPY go.sum* ./                                                                                                                                          0.1s
- => [control-plane builder 6/8] RUN go mod download 2>/dev/null || true                                                                                                                  0.8s
- => [control-plane builder 7/8] COPY . .                                                                                                                                                 0.1s
- => ERROR [control-plane builder 8/8] RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build     -ldflags="-s -w -X github.com/cascata-platform/cascata/control-plane/internal/server.Versi  1.1s
- => CANCELED [gateway builder 2/7] RUN apt-get update && apt-get install -y --no-install-recommends     pkg-config     libssl-dev     cmake     protobuf-compiler     && rm -rf /var/li  0.0s
+[+] Building 203.3s (39/41)     
+ => [internal] load local  0.0s
+ => => reading from  985B  0.0s
+ => [gateway internal] lo  0.2s
+ => => transferrin 1.81kB  0.0s
+ => [control-plane intern  0.2s
+ => => transferrin 1.57kB  0.0s
+
+.........
+ => => exporting config s  0.0s
+ => => exporting attestat  0.1s
+ => => exporting manifest  0.0s
+ => => naming to docker.i  0.0s
+ => => unpacking to docke  0.6s
+ => [control-plane] resol  0.0s
+ => [gateway builder 6/7]  1.2s
+ => ERROR [gateway builde  1.9s
 ------
- > [control-plane builder 8/8] RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build     -ldflags="-s -w -X github.com/cascata-platform/cascata/control-plane/internal/server.Version=$(cat VERSION 2>/dev/null || echo 0.1.0)"     -o cascata-cp     ./cmd/cascata-cp/:
-[+] up 65/68al/config/config.go:11:2: missing go.sum entry for module providing package gopkg.in/yaml.v3 (imported by github.com/cascata-platform/cascata/control-plane/internal/config); to a ✔ Image victoriametrics/victoria-metrics:latest          Pulled                                                                                                                         5.3s
- ✔ Image docker.redpanda.com/redpandadata/redpanda:latest Pulled                                                                                                                         27.8s
- ✔ Image timberio/vector:latest-alpine                    Pulled                                                                                                                         20.3s ✔ Image ghcr.io/postgresml/pgcat:latest                  Pulled                                                                                                                         17.7s
- ✔ Image docker.dragonflydb.io/dragonflydb/dragonfly      Pulled                                                                                                                         19.3s
- ✔ Image centrifugo/centrifugo:latest                     Pulled                                                                                                                         10.6s ✔ Image qdrant/qdrant:latest                             Pulled                                                                                                                         23.2s
- ✔ Image clickhouse/clickhouse-server:latest              Pulled                                                                                                                         31.8s
- ✔ Image quay.io/openbao/openbao:latest                   Pulled                                                                                                                         22.5s
- ⠙ Image docker-gateway                                   Building                                                                                                                       21.5s
- ⠙ Image docker-control-plane                             Building                                                                                                                       21.5s
-Dockerfile:23
+ > [gateway builder 7/7] RUN cargo build --release:
+0.326     Updating crates.io index
+0.860      Locking 232 packages to latest compatible versions
+0.863       Adding addr2line v0.25.1
+0.863       Adding adler2 v2.0.1
+0.866       Adding ahash v0.8.12
+0.867       Adding aho-corasick v1.1.4
+0.867       Adding alloc-no-stdlib v2.0.4
+0.867       Adding alloc-stdlib v0.2.2
+0.867       Adding allocator-api2 v0.2.21
+0.868       Adding anstream v0.6.21
+0.868       Adding anstyle v1.0.13
+0.868       Adding anstyle-parse v0.2.7
+0.869       Adding anstyle-query v1.1.5
+......
+....
+1.036       Adding zstd-safe v7.2.4
+1.037       Adding zstd-sys v2.0.16+zstd.1.5.7
+1.399    Compiling libz-ng-sys v1.1.24
+1.400    Compiling rustversion v1.0.22
+1.469 warning: libz-ng-sys@1.1.24: Compiler family detection failed due to error: ToolNotFound: failed to find tool "c++": No such file or directory (os error 2)
+1.469 error: failed to run custom build command for `libz-ng-sys v1.1.24`
+1.470 
+1.470 Caused by:
+1.470   process didn't exit successfully: `/build/target/release/build/libz-ng-sys-9ea2531443f9511a/build-script-cmake` (exit status: 101)
+1.470   --- stdout
+1.470   CMAKE_TOOLCHAIN_FILE_x86_64-unknown-linux-gnu = None
+1.470   CMAKE_TOOLCHAIN_FILE_x86_64_unknown_linux_gnu = None
+1.470   HOST_CMAKE_TOOLCHAIN_FILE = None
+1.470   CMAKE_TOOLCHAIN_FILE = None
+1.470   CMAKE_GENERATOR_x86_64-unknown-linux-gnu = None
+1.470   CMAKE_GENERATOR_x86_64_unknown_linux_gnu = None
+1.470   HOST_CMAKE_GENERATOR = None
+1.470   CMAKE_GENERATOR = None
+1.470   cargo:warning=Compiler family detection failed due to error: ToolNotFound: failed to find tool "c++": No such file or directory (os error 2)
+1.470   CMAKE_PREFIX_PATH_x86_64-unknown-linux-gnu = None
+1.470   CMAKE_PREFIX_PATH_x86_64_unknown_linux_gnu = None
+1.470   HOST_CMAKE_PREFIX_PATH = None
+1.470   CMAKE_PREFIX_PATH = None
+1.470   CMAKE_x86_64-unknown-linux-gnu = None
+1.470   CMAKE_x86_64_unknown_linux_gnu = None
+1.470   HOST_CMAKE = None
+1.470   CMAKE = None
+1.470   -- Using CMake version 3.25.1
+1.470   -- ZLIB_HEADER_VERSION: 1.3.1
+1.470   -- ZLIBNG_HEADER_VERSION: 2.3.3
+1.470   -- Configuring incomplete, errors occurred!
+1.470   See also "/build/target/release/build/libz-ng-sys-f28c44cdfcebb694/out/build/CMakeFiles/CMakeOutput.log".
+1.470 
+1.470   --- stderr
+1.470   running: cd "/build/target/release/build/libz-ng-sys-f28c44cdfcebb694/out/build" && CMAKE_PREFIX_PATH="" LC_ALL="C" "cmake" "/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libz-ng-sys-1.1.24/src/zlib-ng" "-B" "/build/target/release/build/libz-ng-sys-f28c44cdfcebb694/out/build" "-DBUILD_SHARED_LIBS=OFF" "-DZLIB_COMPAT=OFF" "-DZLIB_ENABLE_TESTS=OFF" "-DWITH_GZFILEOP=ON" "-DCMAKE_INSTALL_LIBDIR=lib" "-DCMAKE_INSTALL_PREFIX=/build/target/release/build/libz-ng-sys-f28c44cdfcebb694/out" "-DCMAKE_C_FLAGS= -ffunction-sections -fdata-sections -fPIC -m64 -w" "-DCMAKE_C_COMPILER=/usr/bin/cc" "-DCMAKE_CXX_FLAGS= -ffunction-sections -fdata-sections -fPIC -m64 -w" "-DCMAKE_CXX_COMPILER=c++" "-DCMAKE_ASM_FLAGS= -ffunction-sections -fdata-sections -fPIC -m64 -w" "-DCMAKE_ASM_COMPILER=/usr/bin/cc" "-DCMAKE_BUILD_TYPE=Release"
+1.470   CMake Error: CMake was unable to find a build program corresponding to "Unix Makefiles".  CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.
+1.470 
+1.470   thread 'main' panicked at /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cmake-0.1.57/src/lib.rs:1132:5:
+1.470 
+1.470   command did not execute successfully, got: exit status: 1
+1.470 
+1.470   build script failed, must exit now
+1.470   note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+1.470 warning: build failed, waiting for other jobs to finish...
+------
+[+] up 0/2
+ ⠙ Image dock... Building 203.5s
+ ⠙ Image dock... Building 203.5s
+Dockerfile:31
 
 --------------------
 
-  22 |     COPY . .
+  29 |     # Copiar código real e compilar
 
-  23 | >>> RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+  30 |     COPY . .
 
-  24 | >>>     -ldflags="-s -w -X github.com/cascata-platform/cascata/control-plane/internal/server.Version=$(cat VERSION 2>/dev/null || echo 0.1.0)" \
+  31 | >>> RUN cargo build --release
 
-  25 | >>>     -o cascata-cp \
+  32 |     
 
-  26 | >>>     ./cmd/cascata-cp/
-
-  27 |     
+  33 |     # Stage 2: Runtime — imagem mínima com apenas libs necessárias
 
 --------------------
 
-target control-plane: failed to solve: process "/bin/sh -c CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build     -ldflags=\"-s -w -X github.com/cascata-platform/cascata/control-plane/internal/server.Version=$(cat VERSION 2>/dev/null || echo 0.1.0)\"     -o cascata-cp     ./cmd/cascata-cp/" did not complete successfully: exit code: 1
-
-[ec2-user@ip-172-26-9-117 ~]$ 
+target gateway: failed to solve: process "/bin/sh -c cargo build --release" did not complete successfully: exit code: 101
 
