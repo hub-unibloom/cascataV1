@@ -67,7 +67,7 @@ services:
 
   # ===========================================================================
   # DRAGONFLYDB — Cache em memória (drop-in Redis)
-  # RAM Limit: 128MB | Porta: 6379
+  # RAM Limit: 256MB | Porta: 6379
   # ===========================================================================
   dragonflydb:
     image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.27.1
@@ -88,7 +88,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 128M
+          memory: 256M
     networks:
       - cascata-shelter
     healthcheck:
@@ -120,7 +120,6 @@ services:
       - --advertise-pandaproxy-addr=localhost:8082
       - --schema-registry-addr=0.0.0.0:8081
       - --set=redpanda.auto_create_topics_enabled=true
-      - --set=redpanda.delete_retention_ms=604800000
     ports:
       - "9092:9092"    # Kafka API (external)
       - "8081:8081"    # Schema Registry
