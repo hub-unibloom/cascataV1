@@ -25,7 +25,6 @@
     <!-- Merge tree settings -->
     <merge_tree>
         <max_bytes_to_merge_at_max_space_in_pool>536870912</max_bytes_to_merge_at_max_space_in_pool>
-        <number_of_free_entries_in_pool_to_execute_mutation>5</number_of_free_entries_in_pool_to_execute_mutation>
     </merge_tree>
 
     <!-- Timezone -->
