@@ -38,7 +38,7 @@ pub fn translate_pg_error(info: &PgErrorInfo) -> CascataValidationError {
         "23505" => {
             let field = extract_field_from_constraint(&info.constraint_name, &info.column_name);
             FieldViolation {
-                field: field.unwrap_or_else(|| "_unknown".to_string()),
+                field: field.clone().unwrap_or_else(|| "_unknown".to_string()),
                 rule: "unique".to_string(),
                 message: format!(
                     "Registro duplicado. {}",
@@ -160,7 +160,7 @@ pub fn translate_pg_error(info: &PgErrorInfo) -> CascataValidationError {
         "42703" => {
             let field = extract_column_from_message(&info.message);
             FieldViolation {
-                field: field.unwrap_or_else(|| "_unknown".to_string()),
+                field: field.clone().unwrap_or_else(|| "_unknown".to_string()),
                 rule: "not_found".to_string(),
                 message: format!(
                     "Campo '{}' não existe neste recurso.",

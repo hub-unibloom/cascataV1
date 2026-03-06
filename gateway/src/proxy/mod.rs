@@ -74,7 +74,7 @@ impl ProxyHttp for CascataProxy {
                         header.insert_header("Content-Type", "application/json").unwrap();
                         
                         session.write_response_header(Box::new(header), false).await?;
-                        session.write_response_body(resp_body.into(), true).await?;
+                        session.write_response_body(Some(bytes::Bytes::from(resp_body)), true).await?;
                         
                         return Ok(true); // Bypassa o upstream
                     }

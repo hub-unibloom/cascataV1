@@ -24,7 +24,7 @@ impl CascataValidationError {
 }
 
 /// Violação individual por campo (Req-2.19.5).
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 pub struct FieldViolation {
     pub field: String,
     pub rule: String,           // "required", "regex", "range", etc.
