@@ -1,181 +1,282 @@
-
-
-
-[+] up 20/20
- ✔ Image docker-gateway               Built                                                                                                                                            1894.6s
- ✔ Image docker-control-plane         Built                                                                                                                                            1894.6s
- ✔ Network docker_cascata-shelter     Created                                                                                                                                          0.2s
- ✔ Volume docker_cascata-rp-data      Created                                                                                                                                          0.1s
- ✔ Volume docker_cascata-vm-data      Created                                                                                                                                          0.0s
- ✔ Volume docker_cascata-df-data      Created                                                                                                                                          0.0s
- ✔ Volume docker_cascata-openbao-data Created                                                                                                                                          0.0s
- ✔ Volume docker_cascata-yb-data      Created                                                                                                                                          0.0s
- ✔ Volume docker_cascata-ch-data      Created                                                                                                                                          0.1s
- ✔ Container cascata-clickhouse       Healthy                                                                                                                                          36.0s
- ✔ Container cascata-redpanda         Healthy                                                                                                                                          12.0s
- ✔ Container cascata-dragonflydb      Healthy                                                                                                                                          20.5s
- ✔ Container cascata-qdrant           Started                                                                                                                                          9.1s
- ✔ Container cascata-victoriametrics  Started                                                                                                                                          8.3s
- ✔ Container cascata-openbao          Started                                                                                                                                          7.7s
- ✘ Container cascata-yugabytedb       Error dependency yugabytedb failed to start                                                                                                      169.3s
- ✔ Container cascata-centrifugo       Started                                                                                                                                          14.2s
- ✔ Container cascata-vector           Started                                                                                                                                          37.6s
- ✔ Container cascata-control-plane    Created                                                                                                                                          0.6s
- ✔ Container cascata-gateway          Created                                                                                                                                          0.6s
+[+] up 19/20
+ ✔ Image docker-gateway               Built                         1959.4s
+ ✔ Image docker-control-plane         Built                         1959.4s
+ ✔ Network docker_cascata-shelter     Created                       0.2s ✔ Volume docker_cascata-df-data      Created                       0.0s
+ ✔ Volume docker_cascata-rp-data      Created                       0.0s[+] up 20/20cker_cascata-vm-data      Created                       0.1s
+ ✔ Image docker-gateway               Built                      1959.4s ✔ Image docker-control-plane         Built                      1959.4s
+ ✔ Network docker_cascata-shelter     Created                    0.2s.0s ✔ Volume docker_cascata-df-data      Created                    0.0s.3s
+ ✔ Volume docker_cascata-rp-data      Created                    0.0s0.0 ✔ Volume docker_cascata-vm-data      Created                    0.1s
+ ✔ Volume docker_cascata-openbao-data Created                    0.0s.5s ✔ Volume docker_cascata-yb-data      Created                    0.0s54. ✔ Volume docker_cascata-ch-data      Created                    0.0s 0. ✔ Container cascata-openbao          Started                    9.3s5.0 ✔ Container cascata-clickhouse       Healthy                    30.0s0. ✔ Container cascata-victoriametrics  Started                    8.5s3.9 ✘ Container cascata-yugabytedb       Error dependency yuga...   574.4s
+ ✔ Container cascata-redpanda         Healthy                    15.0s2s
+ ✔ Container cascata-dragonflydb      Healthy                    13.9s.1 ✔ Container cascata-qdrant           Started                    6.2s
+ ✔ Container cascata-centrifugo       Started                    18.1s.0 ✔ Container cascata-vector           Started                    31.0s
+ ✔ Container cascata-control-plane    Created                    0.6s.6s
+ ✔ Container cascata-gateway          Created                    0.5s.5s
 dependency failed to start: container cascata-yugabytedb is unhealthy
-[ec2-user@ip-172-26-10-78 ~]$ docker ps
-CONTAINER ID   IMAGE                                                 COMMAND                  CREATED         STATUS                            PORTS                                                                                                                                                                                                                                                                       NAMES
-2e3631017484   timberio/vector:0.53.0-alpine                         "/usr/local/bin/vect…"   3 minutes ago   Up 2 minutes (unhealthy)          0.0.0.0:8686->8686/tcp, [::]:8686->8686/tcp                                                                                                                                                                                                                                 cascata-vector
-90cd969b1dae   centrifugo/centrifugo:v6                              "centrifugo -c /etc/…"   3 minutes ago   Up 3 minutes                      0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp                                                                                                                                                                                                                                 cascata-centrifugo
-44a86f21fb26   qdrant/qdrant:v1.15.0                                 "./entrypoint.sh"        3 minutes ago   Up 3 minutes                      0.0.0.0:6333-6334->6333-6334/tcp, [::]:6333-6334->6333-6334/tcp                                                                                                                                                                                                             cascata-qdrant
-425921a5789c   cascata/yugabytedb:shared                             "/sbin/tini -- bin/y…"   3 minutes ago   Up 6 seconds (health: starting)   6379/tcp, 0.0.0.0:5433->5433/tcp, [::]:5433->5433/tcp, 7000/tcp, 0.0.0.0:7100->7100/tcp, [::]:7100->7100/tcp, 7200/tcp, 9042/tcp, 9100/tcp, 10100/tcp, 11000/tcp, 0.0.0.0:9000->9000/tcp, [::]:9000->9000/tcp, 0.0.0.0:15433->15433/tcp, [::]:15433->15433/tcp, 12000/tcp   cascata-yugabytedb
-3d7abcb2171c   clickhouse/clickhouse-server:25.8-alpine              "/entrypoint.sh"         3 minutes ago   Up 3 minutes (unhealthy)          0.0.0.0:8123->8123/tcp, [::]:8123->8123/tcp, 9009/tcp, 0.0.0.0:9001->9000/tcp, [::]:9001->9000/tcp                                                                                                                                                                          cascata-clickhouse
-eac7a1b947db   quay.io/openbao/openbao:2.3.1                         "docker-entrypoint.s…"   3 minutes ago   Up 3 minutes (unhealthy)          0.0.0.0:8200->8200/tcp, [::]:8200->8200/tcp                                                                                                                                                                                                                                 cascata-openbao
-764d9aee989c   docker.dragonflydb.io/dragonflydb/dragonfly:v1.27.1   "entrypoint.sh drago…"   3 minutes ago   Up 3 minutes (healthy)            0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp                                                                                                                                                                                                                                 cascata-dragonflydb
-f52f2b1083d8   victoriametrics/victoria-metrics:v1.122.0             "/victoria-metrics-p…"   3 minutes ago   Up 3 minutes (healthy)            0.0.0.0:8428->8428/tcp, [::]:8428->8428/tcp                                                                                                                                                                                                                                 cascata-victoriametrics
-bb77fe03f7f5   docker.redpanda.com/redpandadata/redpanda:v25.2.5     "/entrypoint.sh redp…"   3 minutes ago   Up 3 minutes (healthy)            0.0.0.0:8081-8082->8081-8082/tcp, [::]:8081-8082->8081-8082/tcp, 0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9644->9644/tcp, [::]:9644->9644/tcp                                                                                                                   cascata-redpanda
 [ec2-user@ip-172-26-10-78 ~]$ 
-free -m
-docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "yugabyte|clickhouse|redpanda"
-docker stats --no-stream | grep -E "yugabyte|clickhouse|redpanda"
-               total        used        free      shared  buff/cache   available
-Mem:            3831        1530         347           9        2245        2300
-Swap:              0           0           0
-cascata-yugabytedb        Restarting (137) 3 seconds ago   
-cascata-clickhouse        Up 4 minutes (unhealthy)         0.0.0.0:8123->8123/tcp, [::]:8123->8123/tcp, 9009/tcp, 0.0.0.0:9001->9000/tcp, [::]:9001->9000/tcp
-cascata-redpanda          Up 4 minutes (healthy)           0.0.0.0:8081-8082->8081-8082/tcp, [::]:8081-8082->8081-8082/tcp, 0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9644->9644/tcp, [::]:9644->9644/tcp
-425921a5789c   cascata-yugabytedb        0.00%     0B / 0B             0.00%     0B / 0B           0B / 0B           0
-3d7abcb2171c   cascata-clickhouse        5.63%     260.3MiB / 384MiB   67.80%    3.05kB / 126B     5.49GB / 19.8MB   183
-bb77fe03f7f5   cascata-redpanda          0.27%     88.02MiB / 384MiB   22.92%    3.49kB / 126B     247MB / 180kB     3
-
-
-
-[ec2-user@ip-172-26-10-78 ~]$ echo "========================================="
-echo "=== 3. YUGABYTEDB — DIAGNÓSTICO PROFUNDO ==="
-echo "========================================="
-echo "--- a) Motivo da morte do container (Docker Inspect OOM/CGroup) ---"
-docker inspect cascata-yugabytedb --format='{{json .State}}' | grep -o '"OOMKilled":[^,]*'
-docker inspect cascata-yugabytedb --format='{{json .State.ExitCode}}'
-
-echo "--- b) Logs do Wrapper Python (Stdout/Stderr) ---"
-docker logs cascata-yugabytedb --tail 50
-
-echo "--- c) Logs do Daemon YB-MASTER Interno ---"
-docker exec cascata-yugabytedb bash -c "cat /root/var/log/yugabyte/yb-master.ERROR 2>/dev/null || cat /home/yugabyte/yb_data/yb-data/master/logs/yb-master.ERROR 2>/dev/null" | tail -50
-
-echo "--- d) Logs do Daemon YB-TSERVER Interno ---"
-docker exec cascata-yugabytedb bash -c "cat /root/var/log/yugabyte/yb-tserver.ERROR 2>/dev/null || cat /home/yugabyte/yb_data/yb-data/tserver/logs/yb-tserver.ERROR 2>/dev/null" | tail -50
-=========================================
-=== 3. YUGABYTEDB — DIAGNÓSTICO PROFUNDO ===
-=========================================
---- a) Motivo da morte do container (Docker Inspect OOM/CGroup) ---
+[ec2-user@ip-172-26-10-78 ~]$ 
+!
+./
+:
+[
+[[
+]]
+{
+}
+accessdb
+addgnupghome
+addpart
+adduser
+agetty
+alias
+alternatives
+amazon-ssm-agent
+anacron
+applygnupgdefaults
+apropos
+apropos.man-db
+arch
+arping
+arptables
+arptables-nft
+arptables-nft-restore
+arptables-nft-save
+arptables-restore
+arptables-save
+attr
+auditctl
+auditd
+augenrules
+aulast
+aulastlog
+aureport
+ausearch
+ausyscall
+authselect
+auvirt
+avcstat
+awk
+b2sum
+badblocks
+base32
+base64
+basename
+basenc
+bash
+bashbug
+bashbug-64
+bg
+bind
+biosdecode
+blkdeactivate
+blkdiscard
+blkid
+blkzone
+blockdev
+bond2team
+bootconfig
+bootctl
+break
+bridge
+builtin
+busctl
+cal
+ca-legacy
+caller
+capsh
+captoinfo
+case
+cat
+catchsegv
+catman
+cd
+centrino-decode
+cfdisk
+cgdisk
+chacl
+chage
+chardetect
+chattr
+chcon
+chcpu
+checkmodule
+checkpolicy
+chgpasswd
+chgrp
+chmem
+chmod
+choom
+chown
+chpasswd
+chronyc
+chronyd
+chroot
+chrt
+chvt
+cksum
+clear
+clock
+clockdiff
+cloud-id
+cloud-init
+cloud-init-per
+cmp
+col
+colcrt
+colrm
+column
+comm
+command
+compgen
+complete
+compopt
+containerd
+containerd-shim-runc-v2
+continue
+coproc
+coredumpctl
+cp
+cpio
+cpupower
+cracklib-check
+cracklib-format
+cracklib-packer
+cracklib-unpacker
+create-cracklib-dict
+crond
+cronnext
+crontab
+csplit
+ctr
+ctrlaltdel
+ctstat
+curl
+cut
+cvtsudoers
+cyrusbdb2current
+date
+dbus-broker
+dbus-broker-launch
+dbxtool
+dcb
+dd
+deallocvt
+debugfs
+declare
+delpart
+depmod
+devlink
+df
+dfu-tool
+dhclient
+dhclient-script
+diff
+diff3
+dir
+dircolors
+dirmngr
+dirmngr-client
+dirname
+dirs
+disown
+distro
+dmesg
+dmfilemapd
+dmidecode
+dmsetup
+dmstats
+dnf
+dnf-3
+dnf4
+dnsdomainname
+do
+docker
+dockerd
+dockerd-rootless-setuptool.sh
+dockerd-rootless.sh
+docker-proxy
+domainname
+done
+dracut
+du
+dumpe2fs
+dumpkeys
+e2freefrag
+e2fsck
+e2image
+e2label
+e2mmpstatus
+e2undo
+e4crypt
+e4defrag
+ebtables
+ebtables-nft
+ebtables-nft-restore
+ebtables-nft-save
+ebtables-restore
+ebtables-save
+ebtables-translate
+echo
+efibootdump
+efibootmgr
+egrep
+eject
+elif
+else
+enable
+encguess
+env
+envsubst
+eqn
+esac
+ethtool
+eval
+evmctl
+ex
+exec
+exit
+expand
+export
+expr
+factor
+faillock
+fallocate
+false
+fc
+fdformat
+fdisk
+fg
+fgconsole
+fgrep
+fi
+file
+filefrag
+fincore
+find
+[ec2-user@ip-172-26-10-78 ~]$ ÓSTICO PROFUNDO ==="
+> echo "========================================="
+> echo "--- a) Motivo da morte do container (Docker Inspect OOM/CGroup) ---"
+-bash: syntax error near unexpected token `)'
+[ec2-user@ip-172-26-10-78 ~]$ docker inspect cascata-yugabytedb --format='{{json .State}}' | grep -o '"OOMKilled":[^,]*'
 "OOMKilled":false
-137
+[ec2-user@ip-172-26-10-78 ~]$ docker inspect cascata-yugabytedb --format='{{json .State.ExitCode}}'
+0
+[ec2-user@ip-172-26-10-78 ~]$ 
+[ec2-user@ip-172-26-10-78 ~]$ echo "--- b) Logs do Wrapper Python (Stdout/Stderr) ---"
 --- b) Logs do Wrapper Python (Stdout/Stderr) ---
+[ec2-user@ip-172-26-10-78 ~]$ docker logs cascata-yugabytedb --tail 50
 Starting yugabyted...
-❌ Database failed to start            
-Starting yugabyted...
-❌ Database failed to start            
-......
-❌ Database failed to start            
+✅ YugabyteDB Started                  
+✅ UI ready         
+✅ Data placement constraint successfully verified                 
+[ec2-user@ip-172-26-10-78 ~]$ 
+[ec2-user@ip-172-26-10-78 ~]$ echo "--- c) Logs do Daemon YB-MASTER Interno ---"
 --- c) Logs do Daemon YB-MASTER Interno ---
-Error response from daemon: Container 425921a5789c987c482aec745921e0f03ac4d772a7db81e8a32528e6408cb230 is restarting, wait until the container is running
+[ec2-user@ip-172-26-10-78 ~]$ docker exec cascata-yugabytedb bash -c "cat /root/var/log/yugabyte/yb-master.ERROR 2>/dev/null || cat /home/yugabyte/yb_data/yb-data/master/logs/yb-master.ERROR 2>/dev/null" | tail -50
+[ec2-user@ip-172-26-10-78 ~]$ 
+[ec2-user@ip-172-26-10-78 ~]$ echo "--- d) Logs do Daemon YB-TSERVER Interno ---"
 --- d) Logs do Daemon YB-TSERVER Interno ---
-Error response from daemon: Container 425921a5789c987c482aec745921e0f03ac4d772a7db81e8a32528e6408cb230 is restarting, wait until the container is running
-[ec2-user@ip-172-26-10-78 ~]$ 
-[ec2-user@ip-172-26-10-78 ~]$ 
-[ec2-user@ip-172-26-10-78 ~]$ 
-[ec2-user@ip-172-26-10-78 ~]$ 
-[ec2-user@ip-172-26-10-78 ~]$ 
-[ec2-user@ip-172-26-10-78 ~]$ docker stop cascata-yugabytedb 2>/dev/null; docker update --restart=no cascata-yugabytedb 2>/dev/null; docker run --rm --name yb-debug --memory=900m --network docker_cascata-shelter -v docker_cascata-yb-data:/home/yugabyte/yb_data cascata/yugabytedb:shared bash -c 'bin/yugabyted start --daemon=false --base_dir=/home/yugabyte/yb_data --tserver_flags="ysql_enable_auth=false,yb_enable_read_committed_isolation=true,enable_ysql_conn_mgr=true,allowed_preview_flags_csv=enable_ysql_conn_mgr,memory_limit_hard_bytes=536870912" --master_flags="memory_limit_hard_bytes=134217728" --ysql_pg_conf_csv="shared_preload_libraries=pg_cron,pg_stat_statements,pgaudit" 2>&1; echo "=== MASTER ERROR ==="; find /home/yugabyte/yb_data -name "yb-master.ERROR" 2>/dev/null | xargs cat 2>/dev/null | tail -50; echo "=== TSERVER ERROR ==="; find /home/yugabyte/yb_data -name "yb-tserver.ERROR" 2>/dev/null | xargs cat 2>/dev/null | tail -50; echo "=== YUGABYTED LOG ==="; find /home/yugabyte/yb_data -name "yugabyted.log" 2>/dev/null | xargs tail -50 2>/dev/null' 2>&1 | tee ~/yb_debug.log; echo "--- SALVO EM ~/yb_debug.log ---"
-cascata-yugabytedb
-cascata-yugabytedb
-+--------------------------------------------------------------------------------------------------+
-|                                  Yugabyted CLI: YugabyteDB command line                                   |
-+--------------------------------------------------------------------------------------------------+
-YugabyteDB command-line interface for creating and configuring YugabyteDB cluster.
-
-Usage: yugabyted [command] [flags]
-
-To start YugabyteDB cluster, run 'yugabyted start'.
-
-Find more information at: https://docs.yugabyte.com/preview/reference/configuration/yugabyted/
-
-Commands:
-  start                   Start YugabyteDB cluster.
-  stop                    Stop running YugabyteDB cluster.
-  destroy                 Destroy YugabyteDB cluster and remove data.
-  backup                  Back up a database.
-  restore                 Restore a database.
-  status                  Print status of YugabyteDB cluster.
-  version                 Release version of YugabyteDB cluster.
-  finalize_upgrade        Finalize the upgrade process for the YugabyteDB cluster.
-  collect_logs            Collect and package logs for troubleshooting.
-  connect                 Connect to YugabyteDB cluster through the CLI.
-  demo                    Load and interact with preset demo data.
-  cert                    Generate SSL certificates
-  configure               Configure data placement, toggle encryption at rest or run point-in-time recovery operations on the cluster.
-  configure_read_replica  Configure/Modify/Delete a read replica cluster.
-  upgrade                 Upgrade YugabyteDB processes in this node.
-  xcluster                Operations for xcluster replication between 2 clusters.
-
-Flags:
-  -h, --help              show this help message and exit
-
-Run 'yugabyted [command] -h' for help with specific commands.
-Error: unrecognized arguments: --ysql_pg_conf_csv=shared_preload_libraries=pg_cron,pg_stat_statements,pgaudit.
-=== MASTER ERROR ===
-=== TSERVER ERROR ===
-=== YUGABYTED LOG ===
-For more information, check the logs in /home/yugabyte/yb_data/logs
-[yugabyted start] 2026-03-07 05:08:47,014 INFO:  | 8.9s | Shutting down...
-[yugabyted start] 2026-03-07 05:08:47,015 INFO:  | 8.9s | All callhome threads shut down successfully
-[yugabyted start] 2026-03-07 05:08:52,516 INFO:  | 0.0s | Running yugabyted command: 'bin/yugabyted start --daemon=false --tserver_flags=ysql_enable_auth=false,yb_enable_read_committed_isolation=true,enable_ysql_conn_mgr=true,allowed_preview_flags_csv=enable_ysql_conn_mgr,default_memory_limit_to_ram_ratio=0.7,ysql_pg_conf_csv="shared_preload_libraries='pg_cron,pg_stat_statements,pgaudit'" --master_flags=default_memory_limit_to_ram_ratio=0.2 --base_dir=/home/yugabyte/yb_data'
-[yugabyted start] 2026-03-07 05:08:52,516 INFO:  | 0.0s | cmd = start using config file: /home/yugabyte/yb_data/conf/yugabyted.conf
-[yugabyted start] 2026-03-07 05:08:52,516 INFO:  | 0.0s | Found directory /home/yugabyte/bin for file openssl_proxy.sh
-[yugabyted start] 2026-03-07 05:08:52,516 INFO:  | 0.0s | Found directory /home/yugabyte/bin for file yb-admin
-[yugabyted start] 2026-03-07 05:08:52,516 INFO:  | 0.0s | Found directory /home/yugabyte/bin for file yb-ts-cli
-[yugabyted start] 2026-03-07 05:08:52,516 INFO:  | 0.0s | Found directory /home/yugabyte/postgres/bin for file pg_upgrade
-[yugabyted start] 2026-03-07 05:08:52,516 INFO:  | 0.0s | Starting first primary node. Using 76d1e578-1321-4373-9dec-925f684e35d6 as placement_uuid
-[yugabyted start] 2026-03-07 05:08:52,527 INFO:  | 0.0s | Starting yugabyted...
-[yugabyted start] 2026-03-07 05:08:52,528 INFO:  | 0.0s | yugabyted started running with PID 7.
-[yugabyted start] 2026-03-07 05:08:52,528 ERROR:  | 0.0s | Error changing RLIMIT_NOFILE from 1024 to 1048576: current limit exceeds maximum limit
-[yugabyted start] 2026-03-07 05:08:52,528 INFO:  | 0.0s | Running in a Docker container. Skipping pre-requisite checks.
-[yugabyted start] 2026-03-07 05:08:52,528 INFO:  | 0.0s | Found directory /home/yugabyte/bin for file yb-master
-[yugabyted start] 2026-03-07 05:08:52,529 DEBUG:  | 0.0s | Value of saved_data - upgrade_in_progress. False
-[yugabyted start] 2026-03-07 05:08:52,529 DEBUG:  | 0.0s | Value of saved_data - catalog_upgrade_completed. False
-[yugabyted start] 2026-03-07 05:08:52,529 INFO:  | 0.0s | Found directory /home/yugabyte/bin for file yb-tserver
-[yugabyted start] 2026-03-07 05:08:52,529 INFO:  | 0.0s | Found directory /home/yugabyte/bin for file post_install.sh
-[yugabyted start] 2026-03-07 05:08:52,529 INFO:  | 0.0s | Running the post-installation script /home/yugabyte/bin/post_install.sh (may be a no-op)
-[yugabyted start] 2026-03-07 05:08:52,579 INFO:  | 0.1s | Successfully ran the post-installation script.
-[yugabyted start] 2026-03-07 05:08:52,579 INFO:  | 0.1s | About to start master with cmd /home/yugabyte/bin/yb-master --default_memory_limit_to_ram_ratio=0.2 --stop_on_parent_termination --undefok=stop_on_parent_termination --fs_data_dirs=/home/yugabyte/yb_data/data --webserver_interface=425921a5789c --metrics_snapshotter_tserver_metrics_whitelist=handler_latency_yb_tserver_TabletServerService_Read_count,handler_latency_yb_tserver_TabletServerService_Write_count,handler_latency_yb_tserver_TabletServerService_Read_sum,handler_latency_yb_tserver_TabletServerService_Write_sum,disk_usage,cpu_usage,node_up,ysql_conn_mgr --yb_num_shards_per_tserver=1 --ysql_num_shards_per_tserver=1 --placement_cloud=cloud1 --placement_region=datacenter1 --placement_zone=rack1 --use_memory_defaults_optimized_for_ysql=true --rpc_bind_addresses=425921a5789c:7100 --server_broadcast_addresses=425921a5789c:7100 --replication_factor=1 --server_dump_info_path=/home/yugabyte/yb_data/data/master-info --master_enable_metrics_snapshotter=true --webserver_port=7000 --instance_uuid_override=46cd0b8d43144822b1cbee685f65b7a3 --enforce_tablet_replica_limits=true --split_respects_tablet_replica_limits=true --master_addresses=425921a5789c:7100 --cluster_uuid=406d376a-9ab8-4fd6-8979-b4218b3e054f
-[yugabyted start] 2026-03-07 05:08:52,583 INFO:  | 0.1s | master started running with PID 16.
-[yugabyted start] 2026-03-07 05:08:52,583 INFO:  | 0.1s | Waiting for master
-[yugabyted start] 2026-03-07 05:08:52,584 INFO:  | 0.1s | run_process: cmd: ['/home/yugabyte/bin/yb-admin', '--master_addresses', '425921a5789c:7100', 'list_all_masters']
-[yugabyted start] 2026-03-07 05:09:02,185 INFO:  | 9.7s | run_process returned 0: 
-OUT >>
-Master UUID                      	RPC Host/Port        	State    	Role 	Broadcast Host/Port 
-46cd0b8d43144822b1cbee685f65b7a3 	425921a5789c:7100    	ALIVE    	LEADER 	425921a5789c:7100   
-
-<< ERR >>
-
-<<
-[yugabyted start] 2026-03-07 05:09:02,186 INFO:  | 9.7s | run_process: cmd: ['/home/yugabyte/bin/yb-admin', '-master_addresses', '425921a5789c:7100', 'modify_placement_info', 'cloud1.datacenter1.rack1', '1', '76d1e578-1321-4373-9dec-925f684e35d6']
-[yugabyted start] 2026-03-07 05:09:02,747 INFO:  | 10.2s | run_process returned 0: 
-OUT >>
-
-<< ERR >>
-
-<<
-[yugabyted start] 2026-03-07 05:09:02,747 INFO:  | 10.2s | Got full master addrs list: ['425921a5789c:7100']
-[yugabyted start] 2026-03-07 05:09:02,747 INFO:  | 10.2s | Old master flag is: ['--tserver_master_addrs=425921a5789c:7100'] and new master flag is: --tserver_master_addrs=425921a5789c:7100
-[yugabyted start] 2026-03-07 05:09:02,748 INFO:  | 10.2s | About to start tserver with cmd /home/yugabyte/bin/yb-tserver --stop_on_parent_termination --undefok=stop_on_parent_termination --fs_data_dirs=/home/yugabyte/yb_data/data --webserver_interface=425921a5789c --metrics_snapshotter_tserver_metrics_whitelist=handler_latency_yb_tserver_TabletServerService_Read_count,handler_latency_yb_tserver_TabletServerService_Write_count,handler_latency_yb_tserver_TabletServerService_Read_sum,handler_latency_yb_tserver_TabletServerService_Write_sum,disk_usage,cpu_usage,node_up,ysql_conn_mgr --yb_num_shards_per_tserver=1 --ysql_num_shards_per_tserver=1 --placement_cloud=cloud1 --placement_region=datacenter1 --placement_zone=rack1 --use_memory_defaults_optimized_for_ysql=true --rpc_bind_addresses=425921a5789c:9100 --server_broadcast_addresses=425921a5789c:9100 --cql_proxy_bind_address=425921a5789c:9042 --server_dump_info_path=/home/yugabyte/yb_data/data/tserver-info --start_pgsql_proxy --pgsql_proxy_bind_address=425921a5789c:5433 --tserver_enable_metrics_snapshotter=true --metrics_snapshotter_interval_ms=11000 --webserver_port=9000 --instance_uuid_override=e879c69c485c48fba492f63529bd05f6 --start_redis_proxy=false --placement_uuid=76d1e578-1321-4373-9dec-925f684e35d6 --ysql_enable_auth=false --yb_enable_read_committed_isolation=true --enable_ysql_conn_mgr=true --allowed_preview_flags_csv=enable_ysql_conn_mgr --default_memory_limit_to_ram_ratio=0.7 --ysql_pg_conf_csv="shared_preload_libraries='pg_cron --pg_stat_statements --pgaudit'" --tserver_master_addrs=425921a5789c:7100
-[yugabyted start] 2026-03-07 05:09:02,808 INFO:  | 10.3s | tserver started running with PID 87.
-[yugabyted start] 2026-03-07 05:09:02,808 ERROR:  | 10.3s | Failed to create symlink from /home/yugabyte/yb_data/data/yb-data/tserver/logs to /home/yugabyte/yb_data/logs/tserver
-[yugabyted start] 2026-03-07 05:09:02,808 INFO:  | 10.3s | Waiting for tserver ...
-[yugabyted start] 2026-03-07 05:09:02,809 INFO:  | 10.3s | run_process: cmd: ['/home/yugabyte/bin/yb-admin', '--master_addresses', '425921a5789c:7100', 'list_all_tablet_servers']
-[yugabyted start] 2026-03-07 05:09:02,975 DEBUG:  | 10.5s | Received signal: 15
-[yugabyted start] 2026-03-07 05:09:02,989 INFO:  | 10.5s | Shutting down...
-[yugabyted start] 2026-03-07 05:09:02,991 INFO:  | 10.5s | All callhome threads shut down successfully
---- SALVO EM ~/yb_debug.log ---
-[ec2-user@ip-172-26-10-78 ~]$ 
+[ec2-user@ip-172-26-10-78 ~]$ docker exec cascata-yugabytedb bash -c "cat /root/var/log/yugabyte/yb-tserver.ERROR 2>/dev/null || cat /home/yugabyte/yb_data/yb-data/tserver/logs/yb-tserver.ERROR 2>/dev/null" | tail -50
+[ec2-user@ip-172-26-10-78 ~]$ bash infra/docker/scripts/diagnose-shelter-db.sh
+bash: infra/docker/scripts/diagnose-shelter-db.sh: No such file or directory
+[ec2-user@ip-172-26-10-78 ~]$ docker inspect cascata-yugabytedb --format '{{range .State.Health.Log}}{{.Start}} | exit={{.ExitCode}} | {{.Output}}{{"\n"}}{{end}}' | tail -n 40

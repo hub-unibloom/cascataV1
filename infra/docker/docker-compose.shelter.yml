@@ -1,7 +1,7 @@
 # =============================================================================
-# Cascata V1 — Docker Compose — Modo Shelter ($20/mês VPS)
+# Cascata V1 — Docker Compose — Modo Shelter
 # =============================================================================
-# Total RAM limits: ~2036MB (uso real ~1500MB). Operável em VPS de 2GB.
+# Total RAM limits: ~2860MB. VPS mínima: 4GB de RAM.
 # Rede: cascata-shelter (bridge). Todos os serviços na mesma rede.
 #
 # Ref: SAD §2 (Modo Shelter), SRS Req-3.2.1
@@ -45,6 +45,10 @@ services:
     volumes:
       - cascata-yb-data:/home/yugabyte/yb_data
       - ./yugabytedb/ext.conf:/home/yugabyte/ext.conf:ro
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     deploy:
       resources:
         limits:
@@ -65,7 +69,7 @@ services:
 
   # ===========================================================================
   # DRAGONFLYDB — Cache em memória (drop-in Redis)
-  # RAM Limit: 128MB | Porta: 6379
+  # RAM Limit: 300MB | Porta: 6379
   # ===========================================================================
   dragonflydb:
     image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.27.1
@@ -86,7 +90,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 300M
     networks:
       - cascata-shelter
     healthcheck:
@@ -198,11 +202,15 @@ services:
     cap_add:
       - IPC_LOCK
     healthcheck:
-      test: ["CMD", "bao", "status", "-address=http://127.0.0.1:8200"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1:8200/v1/sys/health?standbyok=true || exit 1",
+        ]
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 15s
     restart: unless-stopped
 
 
@@ -231,11 +239,15 @@ services:
       redpanda:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "vector", "top", "--interval", "1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1:8686/health || exit 1",
+        ]
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 15s
     restart: unless-stopped
 
   # ===========================================================================

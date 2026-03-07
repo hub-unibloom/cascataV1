@@ -19,10 +19,10 @@
     <listen_try>1</listen_try>
     <interserver_listen_host replace="1">0.0.0.0</interserver_listen_host>
 
-    <!-- Performance tuning para single node -->
+    <!-- Performance tuning para single node (Shelter: 384MB cgroup) -->
     <max_concurrent_queries>20</max_concurrent_queries>
-    <background_pool_size>16</background_pool_size>
-    <background_schedule_pool_size>16</background_schedule_pool_size>
+    <background_pool_size>2</background_pool_size>
+    <background_schedule_pool_size>2</background_schedule_pool_size>
 
     <!-- Merge tree settings -->
     <merge_tree>
