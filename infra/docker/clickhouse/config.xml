@@ -15,9 +15,9 @@
     <!-- Limites de query mudados para o users.xml ou omitidos por default -->
 
     <!-- Network -->
-    <listen_host>0.0.0.0</listen_host>
+    <listen_host replace="1">0.0.0.0</listen_host>
     <listen_try>1</listen_try>
-    <interserver_listen_host>0.0.0.0</interserver_listen_host>
+    <interserver_listen_host replace="1">0.0.0.0</interserver_listen_host>
 
     <!-- Performance tuning para single node -->
     <max_concurrent_queries>20</max_concurrent_queries>
