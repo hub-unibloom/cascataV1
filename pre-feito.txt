@@ -39,3 +39,4 @@ echo "Preparação concluída. O servidor reiniciará em 5 segundos."
 sleep 7
 sudo reboot
 
+sudo chmod +x install.sh

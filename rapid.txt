@@ -14,10 +14,7 @@ free -m
 docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "yugabyte|clickhouse|redpanda"
 docker stats --no-stream | grep -E "yugabyte|clickhouse|redpanda"
 
-echo "========================================="
-echo "=== 2. CLICKHOUSE — LOGS NATOS ==="
-echo "========================================="
-docker logs cascata-clickhouse --tail 100
+
 
 echo "========================================="
 echo "=== 3. YUGABYTEDB — DIAGNÓSTICO PROFUNDO ==="

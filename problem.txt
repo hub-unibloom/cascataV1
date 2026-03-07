@@ -1,282 +1,86 @@
-[+] up 19/20
- ✔ Image docker-gateway               Built                         1959.4s
- ✔ Image docker-control-plane         Built                         1959.4s
- ✔ Network docker_cascata-shelter     Created                       0.2s ✔ Volume docker_cascata-df-data      Created                       0.0s
- ✔ Volume docker_cascata-rp-data      Created                       0.0s[+] up 20/20cker_cascata-vm-data      Created                       0.1s
- ✔ Image docker-gateway               Built                      1959.4s ✔ Image docker-control-plane         Built                      1959.4s
- ✔ Network docker_cascata-shelter     Created                    0.2s.0s ✔ Volume docker_cascata-df-data      Created                    0.0s.3s
- ✔ Volume docker_cascata-rp-data      Created                    0.0s0.0 ✔ Volume docker_cascata-vm-data      Created                    0.1s
- ✔ Volume docker_cascata-openbao-data Created                    0.0s.5s ✔ Volume docker_cascata-yb-data      Created                    0.0s54. ✔ Volume docker_cascata-ch-data      Created                    0.0s 0. ✔ Container cascata-openbao          Started                    9.3s5.0 ✔ Container cascata-clickhouse       Healthy                    30.0s0. ✔ Container cascata-victoriametrics  Started                    8.5s3.9 ✘ Container cascata-yugabytedb       Error dependency yuga...   574.4s
- ✔ Container cascata-redpanda         Healthy                    15.0s2s
- ✔ Container cascata-dragonflydb      Healthy                    13.9s.1 ✔ Container cascata-qdrant           Started                    6.2s
- ✔ Container cascata-centrifugo       Started                    18.1s.0 ✔ Container cascata-vector           Started                    31.0s
- ✔ Container cascata-control-plane    Created                    0.6s.6s
- ✔ Container cascata-gateway          Created                    0.5s.5s
+[+] up 20/20
+ ✔ Image docker-control-plane         Built                                                                                                                                                                                                                               409.6s
+ ✔ Image docker-gateway               Built                                                                                                                                                                                                                               409.6s
+ ✔ Network docker_cascata-shelter     Created                                                                                                                                                                                                                             0.1s
+ ✔ Volume docker_cascata-df-data      Created                                                                                                                                                                                                                             0.0s
+ ✔ Volume docker_cascata-openbao-data Created                                                                                                                                                                                                                             0.0s
+ ✔ Volume docker_cascata-ch-data      Created                                                                                                                                                                                                                             0.0s
+ ✔ Volume docker_cascata-vm-data      Created                                                                                                                                                                                                                             0.0s
+ ✔ Volume docker_cascata-yb-data      Created                                                                                                                                                                                                                             0.0s
+ ✔ Volume docker_cascata-rp-data      Created                                                                                                                                                                                                                             0.0s
+ ✔ Container cascata-dragonflydb      Healthy                                                                                                                                                                                                                             7.5s
+ ✔ Container cascata-victoriametrics  Started                                                                                                                                                                                                                             1.5s
+ ✔ Container cascata-redpanda         Healthy                                                                                                                                                                                                                             6.8s
+ ✔ Container cascata-openbao          Started                                                                                                                                                                                                                             1.7s
+ ✔ Container cascata-clickhouse       Healthy                                                                                                                                                                                                                             7.0s
+ ✘ Container cascata-yugabytedb       Error dependency yugabytedb failed to start                                                                                                                                                                                         566.0s
+ ✔ Container cascata-qdrant           Started                                                                                                                                                                                                                             2.2s
+ ✔ Container cascata-centrifugo       Started                                                                                                                                                                                                                             7.1s
+ ✔ Container cascata-vector           Started                                                                                                                                                                                                                             7.5s
+ ✔ Container cascata-gateway          Created                                                                                                                                                                                                                             0.1s
+ ✔ Container cascata-control-plane    Created                                                                                                                                                                                                                             0.1s
 dependency failed to start: container cascata-yugabytedb is unhealthy
-[ec2-user@ip-172-26-10-78 ~]$ 
-[ec2-user@ip-172-26-10-78 ~]$ 
-!
-./
-:
-[
-[[
-]]
-{
-}
-accessdb
-addgnupghome
-addpart
-adduser
-agetty
-alias
-alternatives
-amazon-ssm-agent
-anacron
-applygnupgdefaults
-apropos
-apropos.man-db
-arch
-arping
-arptables
-arptables-nft
-arptables-nft-restore
-arptables-nft-save
-arptables-restore
-arptables-save
-attr
-auditctl
-auditd
-augenrules
-aulast
-aulastlog
-aureport
-ausearch
-ausyscall
-authselect
-auvirt
-avcstat
-awk
-b2sum
-badblocks
-base32
-base64
-basename
-basenc
-bash
-bashbug
-bashbug-64
-bg
-bind
-biosdecode
-blkdeactivate
-blkdiscard
-blkid
-blkzone
-blockdev
-bond2team
-bootconfig
-bootctl
-break
-bridge
-builtin
-busctl
-cal
-ca-legacy
-caller
-capsh
-captoinfo
-case
-cat
-catchsegv
-catman
-cd
-centrino-decode
-cfdisk
-cgdisk
-chacl
-chage
-chardetect
-chattr
-chcon
-chcpu
-checkmodule
-checkpolicy
-chgpasswd
-chgrp
-chmem
-chmod
-choom
-chown
-chpasswd
-chronyc
-chronyd
-chroot
-chrt
-chvt
-cksum
-clear
-clock
-clockdiff
-cloud-id
-cloud-init
-cloud-init-per
-cmp
-col
-colcrt
-colrm
-column
-comm
-command
-compgen
-complete
-compopt
-containerd
-containerd-shim-runc-v2
-continue
-coproc
-coredumpctl
-cp
-cpio
-cpupower
-cracklib-check
-cracklib-format
-cracklib-packer
-cracklib-unpacker
-create-cracklib-dict
-crond
-cronnext
-crontab
-csplit
-ctr
-ctrlaltdel
-ctstat
-curl
-cut
-cvtsudoers
-cyrusbdb2current
-date
-dbus-broker
-dbus-broker-launch
-dbxtool
-dcb
-dd
-deallocvt
-debugfs
-declare
-delpart
-depmod
-devlink
-df
-dfu-tool
-dhclient
-dhclient-script
-diff
-diff3
-dir
-dircolors
-dirmngr
-dirmngr-client
-dirname
-dirs
-disown
-distro
-dmesg
-dmfilemapd
-dmidecode
-dmsetup
-dmstats
-dnf
-dnf-3
-dnf4
-dnsdomainname
-do
-docker
-dockerd
-dockerd-rootless-setuptool.sh
-dockerd-rootless.sh
-docker-proxy
-domainname
-done
-dracut
-du
-dumpe2fs
-dumpkeys
-e2freefrag
-e2fsck
-e2image
-e2label
-e2mmpstatus
-e2undo
-e4crypt
-e4defrag
-ebtables
-ebtables-nft
-ebtables-nft-restore
-ebtables-nft-save
-ebtables-restore
-ebtables-save
-ebtables-translate
-echo
-efibootdump
-efibootmgr
-egrep
-eject
-elif
-else
-enable
-encguess
-env
-envsubst
-eqn
-esac
-ethtool
-eval
-evmctl
-ex
-exec
-exit
-expand
-export
-expr
-factor
-faillock
-fallocate
-false
-fc
-fdformat
-fdisk
-fg
-fgconsole
-fgrep
-fi
-file
-filefrag
-fincore
-find
-[ec2-user@ip-172-26-10-78 ~]$ ÓSTICO PROFUNDO ==="
-> echo "========================================="
-> echo "--- a) Motivo da morte do container (Docker Inspect OOM/CGroup) ---"
--bash: syntax error near unexpected token `)'
-[ec2-user@ip-172-26-10-78 ~]$ docker inspect cascata-yugabytedb --format='{{json .State}}' | grep -o '"OOMKilled":[^,]*'
+[ec2-user@ip-172-26-14-110 ~]$ 
+[ec2-user@ip-172-26-14-110 ~]$ 
+[ec2-user@ip-172-26-14-110 ~]$ echo "========================================="
+echo "=== 1. STATUS E CONSUMO DO DEPLOY ==="
+echo "========================================="
+free -m
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "yugabyte|clickhouse|redpanda"
+docker stats --no-stream | grep -E "yugabyte|clickhouse|redpanda"
+
+
+
+echo "========================================="
+echo "=== 3. YUGABYTEDB — DIAGNÓSTICO PROFUNDO ==="
+echo "========================================="
+echo "--- a) Motivo da morte do container (Docker Inspect OOM/CGroup) ---"
+docker inspect cascata-yugabytedb --format='{{json .State}}' | grep -o '"OOMKilled":[^,]*'
+docker inspect cascata-yugabytedb --format='{{json .State.ExitCode}}'
+
+echo "--- b) Logs do Wrapper Python (Stdout/Stderr) ---"
+docker logs cascata-yugabytedb --tail 50
+
+echo "--- c) Logs do Daemon YB-MASTER Interno ---"
+docker exec cascata-yugabytedb bash -c "cat /root/var/log/yugabyte/yb-master.ERROR 2>/dev/null || cat /home/yugabyte/yb_data/yb-data/master/logs/yb-master.ERROR 2>/dev/null" | tail -50
+
+echo "--- d) Logs do Daemon YB-TSERVER Interno ---"
+docker exec cascata-yugabytedb bash -c "cat /root/var/log/yugabyte/yb-tserver.ERROR 2>/dev/null || cat /home/yugabyte/yb_data/yb-data/tserver/logs/yb-tserver.ERROR 2>/dev/null" | tail -50
+=========================================
+=== 1. STATUS E CONSUMO DO DEPLOY ===
+=========================================
+               total        used        free      shared  buff/cache   available
+Mem:            7815        1970         204           5        5944        5844
+Swap:           2047         157        1890
+cascata-yugabytedb        Up 11 minutes (unhealthy)   6379/tcp, 0.0.0.0:5433->5433/tcp, [::]:5433->5433/tcp, 7000/tcp, 0.0.0.0:7100->7100/tcp, [::]:7100->7100/tcp, 7200/tcp, 9042/tcp, 9100/tcp, 10100/tcp, 11000/tcp, 0.0.0.0:9000->9000/tcp, [::]:9000->9000/tcp, 0.0.0.0:15433->15433/tcp, [::]:15433->15433/tcp, 12000/tcp
+cascata-clickhouse        Up 11 minutes (healthy)     0.0.0.0:8123->8123/tcp, [::]:8123->8123/tcp, 9009/tcp, 0.0.0.0:9001->9000/tcp, [::]:9001->9000/tcp
+cascata-redpanda          Up 11 minutes (healthy)     0.0.0.0:8081-8082->8081-8082/tcp, [::]:8081-8082->8081-8082/tcp, 0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9644->9644/tcp, [::]:9644->9644/tcp
+4eb975e681d6   cascata-yugabytedb        93.40%    249.9MiB / 1.172GiB   20.83%    26.2kB / 11.4kB   101MB / 461MB     90
+95f23b774a34   cascata-clickhouse        83.48%    328.7MiB / 384MiB     85.61%    2.45kB / 126B     1.3GB / 338MB     154
+0e331561db10   cascata-redpanda          0.28%     212.1MiB / 384MiB     55.22%    2.73kB / 126B     142MB / 172kB     3
+=========================================
+=== 3. YUGABYTEDB — DIAGNÓSTICO PROFUNDO ===
+=========================================
+--- a) Motivo da morte do container (Docker Inspect OOM/CGroup) ---
 "OOMKilled":false
-[ec2-user@ip-172-26-10-78 ~]$ docker inspect cascata-yugabytedb --format='{{json .State.ExitCode}}'
 0
-[ec2-user@ip-172-26-10-78 ~]$ 
-[ec2-user@ip-172-26-10-78 ~]$ echo "--- b) Logs do Wrapper Python (Stdout/Stderr) ---"
 --- b) Logs do Wrapper Python (Stdout/Stderr) ---
-[ec2-user@ip-172-26-10-78 ~]$ docker logs cascata-yugabytedb --tail 50
 Starting yugabyted...
 ✅ YugabyteDB Started                  
 ✅ UI ready         
 ✅ Data placement constraint successfully verified                 
-[ec2-user@ip-172-26-10-78 ~]$ 
-[ec2-user@ip-172-26-10-78 ~]$ echo "--- c) Logs do Daemon YB-MASTER Interno ---"
 --- c) Logs do Daemon YB-MASTER Interno ---
-[ec2-user@ip-172-26-10-78 ~]$ docker exec cascata-yugabytedb bash -c "cat /root/var/log/yugabyte/yb-master.ERROR 2>/dev/null || cat /home/yugabyte/yb_data/yb-data/master/logs/yb-master.ERROR 2>/dev/null" | tail -50
-[ec2-user@ip-172-26-10-78 ~]$ 
-[ec2-user@ip-172-26-10-78 ~]$ echo "--- d) Logs do Daemon YB-TSERVER Interno ---"
 --- d) Logs do Daemon YB-TSERVER Interno ---
-[ec2-user@ip-172-26-10-78 ~]$ docker exec cascata-yugabytedb bash -c "cat /root/var/log/yugabyte/yb-tserver.ERROR 2>/dev/null || cat /home/yugabyte/yb_data/yb-data/tserver/logs/yb-tserver.ERROR 2>/dev/null" | tail -50
-[ec2-user@ip-172-26-10-78 ~]$ bash infra/docker/scripts/diagnose-shelter-db.sh
-bash: infra/docker/scripts/diagnose-shelter-db.sh: No such file or directory
-[ec2-user@ip-172-26-10-78 ~]$ docker inspect cascata-yugabytedb --format '{{range .State.Health.Log}}{{.Start}} | exit={{.ExitCode}} | {{.Output}}{{"\n"}}{{end}}' | tail -n 40
+[ec2-user@ip-172-26-14-110 ~]$ docker ps
+CONTAINER ID   IMAGE                                                 COMMAND                  CREATED          STATUS                      PORTS                                                                                                                                                                                                                                                                       NAMES
+9204b380ee31   timberio/vector:0.53.0-alpine                         "/usr/local/bin/vect…"   12 minutes ago   Up 11 minutes (unhealthy)   0.0.0.0:8686->8686/tcp, [::]:8686->8686/tcp                                                                                                                                                                                                                                 cascata-vector
+0f55318c074f   centrifugo/centrifugo:v6                              "centrifugo -c /etc/…"   12 minutes ago   Up 11 minutes               0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp                                                                                                                                                                                                                                 cascata-centrifugo
+4eb975e681d6   cascata/yugabytedb:shared                             "/sbin/tini -- bin/y…"   12 minutes ago   Up 12 minutes (unhealthy)   6379/tcp, 0.0.0.0:5433->5433/tcp, [::]:5433->5433/tcp, 7000/tcp, 0.0.0.0:7100->7100/tcp, [::]:7100->7100/tcp, 7200/tcp, 9042/tcp, 9100/tcp, 10100/tcp, 11000/tcp, 0.0.0.0:9000->9000/tcp, [::]:9000->9000/tcp, 0.0.0.0:15433->15433/tcp, [::]:15433->15433/tcp, 12000/tcp   cascata-yugabytedb
+e19f72a76316   qdrant/qdrant:v1.15.0                                 "./entrypoint.sh"        12 minutes ago   Up 12 minutes               0.0.0.0:6333-6334->6333-6334/tcp, [::]:6333-6334->6333-6334/tcp                                                                                                                                                                                                             cascata-qdrant
+95f23b774a34   clickhouse/clickhouse-server:25.8-alpine              "/entrypoint.sh"         12 minutes ago   Up 12 minutes (healthy)     0.0.0.0:8123->8123/tcp, [::]:8123->8123/tcp, 9009/tcp, 0.0.0.0:9001->9000/tcp, [::]:9001->9000/tcp                                                                                                                                                                          cascata-clickhouse
+718be116bab2   docker.dragonflydb.io/dragonflydb/dragonfly:v1.27.1   "entrypoint.sh drago…"   12 minutes ago   Up 12 minutes (healthy)     0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp                                                                                                                                                                                                                                 cascata-dragonflydb
+5e589bafe7c6   quay.io/openbao/openbao:2.3.1                         "docker-entrypoint.s…"   12 minutes ago   Up 12 minutes (healthy)     0.0.0.0:8200->8200/tcp, [::]:8200->8200/tcp                                                                                                                                                                                                                                 cascata-openbao
+0e331561db10   docker.redpanda.com/redpandadata/redpanda:v25.2.5     "/entrypoint.sh redp…"   12 minutes ago   Up 12 minutes (healthy)     0.0.0.0:8081-8082->8081-8082/tcp, [::]:8081-8082->8081-8082/tcp, 0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9644->9644/tcp, [::]:9644->9644/tcp                                                                                                                   cascata-redpanda
+70fbe6b721e5   victoriametrics/victoria-metrics:v1.122.0             "/victoria-metrics-p…"   12 minutes ago   Up 12 minutes (healthy)     0.0.0.0:8428->8428/tcp, [::]:8428->8428/tcp                                                                                                                                                                                                                                 cascata-victoriametrics
+[ec2-user@ip-172-26-14-110 ~]$ 
+
