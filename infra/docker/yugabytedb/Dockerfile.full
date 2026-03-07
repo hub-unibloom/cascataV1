@@ -67,8 +67,8 @@ USER root
 COPY --from=postgis-builder /artifacts/lib/       /home/yugabyte/postgres/lib/
 COPY --from=postgis-builder /artifacts/extension/ /home/yugabyte/postgres/share/extension/
 
-# Configurar shared_preload_libraries
-# Agora delegado para o docker-compose através de volume (postgresql.conf)
+# pg_cron já está na imagem base — apenas configurar preload. PostGIS carregado sob demanda.
+# (Variaveis de ambiente transacionais foram movidas para o compose via flagfile - evite Python Wrapper Crash)
 # Voltar para user padrão do YugabyteDB
 USER yugabyte
 

@@ -1,0 +1,233 @@
+Aqui tem apenas uma aleta e um possivle problema que poderia ar caso vc fosse sem noção:
+
+POssivei erros que seriam feito em uma implementação não minusiosa:
+
+[+] up 20/20
+ ✔ Image docker-gateway               Built                                                                                                                                            1696.8s
+ ✔ Image docker-control-plane         Built                                                                                                                                            1696.8s
+ ✔ Network docker_cascata-shelter     Created                                                                                                                                          0.5s
+ ✔ Volume docker_cascata-yb-data      Created                                                                                                                                          0.0s
+ ✔ Volume docker_cascata-openbao-data Created                                                                                                                                          0.0s
+ ✔ Volume docker_cascata-df-data      Created                                                                                                                                          0.0s
+ ✔ Volume docker_cascata-rp-data      Created                                                                                                                                          0.0s
+ ✔ Volume docker_cascata-vm-data      Created                                                                                                                                          0.0s
+ ✔ Volume docker_cascata-ch-data      Created                                                                                                                                          0.0s
+ ✘ Container cascata-yugabytedb       Error dependency yugabytedb failed to start                                                                                                      22.4s
+ ✔ Container cascata-openbao          Started                                                                                                                                          7.5s
+ ✔ Container cascata-dragonflydb      Healthy                                                                                                                                          13.3s
+ ✔ Container cascata-redpanda         Healthy                                                                                                                                          15.9s
+ ✔ Container cascata-victoriametrics  Started                                                                                                                                          6.8s
+ ✘ Container cascata-clickhouse       Error dependency clickhouse failed to start                                                                                                      115.4s
+ ✔ Container cascata-qdrant           Started                                                                                                                                          8.5s
+ ✔ Container cascata-centrifugo       Started                                                                                                                                          16.8s
+ ✔ Container cascata-vector           Created                                                                                                                                          0.5s
+ ✔ Container cascata-control-plane    Created                                                                                                                                          0.6s
+ ✔ Container cascata-gateway          Created                                                                                                                                          0.6s
+dependency failed to start: container cascata-yugabytedb is unhealthy
+[ec2-user@ip-172-26-10-78 ~]$ 
+[ec2-user@ip-172-26-10-78 ~]$ 
+[ec2-user@ip-172-26-10-78 ~]$ 
+echo "========================================="
+echo "=== 1. STATUS E CONSUMO DO DEPLOY ==="
+echo "========================================="
+free -m
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "yugabyte|clickhouse|redpanda"
+docker stats --no-stream | grep -E "yugabyte|clickhouse|redpanda"
+
+echo "========================================="
+echo "=== 2. CLICKHOUSE — LOGS NATOS ==="
+echo "========================================="
+docker logs cascata-clickhouse --tail 100
+
+echo "========================================="
+echo "=== 3. YUGABYTEDB — DIAGNÓSTICO PROFUNDO ==="
+echo "========================================="
+echo "--- a) Motivo da morte do container (Docker Inspect OOM/CGroup) ---"
+docker inspect cascata-yugabytedb --format='{{json .State}}' | grep -o '"OOMKilled":[^,]*'
+docker inspect cascata-yugabytedb --format='{{json .State.ExitCode}}'
+
+echo "--- b) Logs do Wrapper Python (Stdout/Stderr) ---"
+docker logs cascata-yugabytedb --tail 50
+
+echo "--- c) Logs do Daemon YB-MASTER Interno ---"
+docker exec cascata-yugabytedb bash -c "cat /root/var/log/yugabyte/yb-master.ERROR 2>/dev/null || cat /home/yugabyte/yb_data/yb-data/master/logs/yb-master.ERROR 2>/dev/null" | tail -50
+
+echo "--- d) Logs do Daemon YB-TSERVER Interno ---"
+docker exec cascata-yugabytedb bash -c "cat /root/var/log/yugabyte/yb-tserver.ERROR 2>/dev/null || cat /home/yugabyte/yb_data/yb-data/tserver/logs/yb-tserver.ERROR 2>/dev/null" | tail -50
+=========================================
+=== 1. STATUS E CONSUMO DO DEPLOY ===
+=========================================
+               total        used        free      shared  buff/cache   available
+Mem:            3831        1538         292          13        2296        2293
+Swap:              0           0           0
+cascata-yugabytedb        Restarting (2) 32 seconds ago   
+cascata-clickhouse        Up 14 minutes (unhealthy)       0.0.0.0:8123->8123/tcp, [::]:8123->8123/tcp, 9009/tcp, 0.0.0.0:9001->9000/tcp, [::]:9001->9000/tcp
+cascata-redpanda          Up 14 minutes (healthy)         0.0.0.0:8081-8082->8081-8082/tcp, [::]:8081-8082->8081-8082/tcp, 0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp, 0.0.0.0:9644->9644/tcp, [::]:9644->9644/tcp
+b9b25a67f158   cascata-yugabytedb        0.00%     0B / 0B             0.00%     0B / 0B           0B / 0B           0
+0aec0fdb29a7   cascata-clickhouse        6.99%     313.2MiB / 384MiB   81.56%    4.36kB / 126B     44.8GB / 44.3MB   183
+af228ebb9d78   cascata-redpanda          0.26%     295.1MiB / 384MiB   76.85%    4.21kB / 126B     248MB / 180kB     3
+=========================================
+=== 2. CLICKHOUSE — LOGS NATOS ===
+=========================================
+2026.03.07 06:04:42.604805 [ 105 ] {} <Error> StaticRequestHandler: Code: 210. DB::NetException: Connection reset by peer, while writing to socket (127.0.0.1:8123 -> 127.0.0.1:36002). (NETWORK_ERROR), Stack trace (when copying this message, always include the lines below):
+
+0. DB::Exception::Exception(DB::Exception::MessageMasked&&, int, bool) @ 0x000000001359985f
+1. DB::Exception::Exception(String&&, int, String, bool) @ 0x000000000ca41a4e
+2. DB::NetException::NetException<String, String, String>(int, FormatStringHelperImpl<std::type_identity<String>::type, std::type_identity<String>::type, std::type_identity<String>::type>, String&&, String&&, String&&) @ 0x00000000137c7d73
+3. DB::WriteBufferFromPocoSocket::socketSendBytes(char const*, unsigned long) @ 0x00000000137c780a
+4. DB::WriteBufferFromHTTPServerResponse::nextImpl() @ 0x0000000019c9cc99
+5. DB::WriteBuffer::next() @ 0x000000000ca50c1e
+6. DB::WriteBufferFromHTTPServerResponse::finalizeImpl() @ 0x0000000019c9d59e
+7. DB::WriteBuffer::finalize() @ 0x00000000136abf90
+8. DB::StaticRequestHandler::handleRequest(DB::HTTPServerRequest&, DB::HTTPServerResponse&, StrongTypedef<unsigned long, ProfileEvents::EventTag> const&) @ 0x0000000019c5b20b
+9. DB::HTTPServerConnection::run() @ 0x0000000019c93ba0
+10. Poco::Net::TCPServerConnection::start() @ 0x000000001f1b62c7
+11. Poco::Net::TCPServerDispatcher::run() @ 0x000000001f1b6759
+12. Poco::PooledThread::run() @ 0x000000001f17cdc7
+13. Poco::ThreadImpl::runnableEntry(void*) @ 0x000000001f17b1c1
+14. ? @ 0x0000000000094ac3
+15. ? @ 0x0000000000125a84
+ (version 25.8.18.1 (official build))
+2026.03.07 06:04:42.755858 [ 105 ] {} <Error> bool DB::WriteBufferFromHTTPServerResponse::cancelWithException(HTTPServerRequest &, int, const std::string &, WriteBuffer *): Failed to send exception to the response write buffer.: Code: 236. DB::Exception: Write buffer has been canceled. (ABORTED), Stack trace (when copying this message, always include the lines below):
+
+0. DB::Exception::Exception(DB::Exception::MessageMasked&&, int, bool) @ 0x000000001359985f
+1. DB::Exception::Exception(String&&, int, String, bool) @ 0x000000000ca41a4e
+2. DB::Exception::Exception(PreformattedMessage&&, int) @ 0x000000000ca41500
+3. DB::Exception::Exception<>(int, FormatStringHelperImpl<>) @ 0x000000000ca505ab
+4. DB::WriteBufferFromHTTPServerResponse::cancelWithException(DB::HTTPServerRequest&, int, String const&, DB::WriteBuffer*) @ 0x0000000019c9db22
+5. DB::StaticRequestHandler::handleRequest(DB::HTTPServerRequest&, DB::HTTPServerResponse&, StrongTypedef<unsigned long, ProfileEvents::EventTag> const&) @ 0x0000000019c5c003
+6. DB::HTTPServerConnection::run() @ 0x0000000019c93ba0
+7. Poco::Net::TCPServerConnection::start() @ 0x000000001f1b62c7
+8. Poco::Net::TCPServerDispatcher::run() @ 0x000000001f1b6759
+9. Poco::PooledThread::run() @ 0x000000001f17cdc7
+10. Poco::ThreadImpl::runnableEntry(void*) @ 0x000000001f17b1c1
+11. ? @ 0x0000000000094ac3
+12. ? @ 0x0000000000125a84
+ (version 25.8.18.1 (official build))
+2026.03.07 06:04:52.728287 [ 107 ] {f39ce75f-029e-41a9-8fb6-4d63b9e6d2ad} <Error> void DB::TCPHandler::sendData(QueryState &, const Block &): Code: 210. DB::NetException: I/O error: Broken pipe, while writing to socket (127.0.0.1:9000 -> 127.0.0.1:39690). (NETWORK_ERROR), Stack trace (when copying this message, always include the lines below):
+
+0. DB::Exception::Exception(DB::Exception::MessageMasked&&, int, bool) @ 0x000000001359985f
+1. DB::Exception::Exception(String&&, int, String, bool) @ 0x000000000ca41a4e
+2. DB::NetException::NetException<String, String, String>(int, FormatStringHelperImpl<std::type_identity<String>::type, std::type_identity<String>::type, std::type_identity<String>::type>, String&&, String&&, String&&) @ 0x00000000137c7d73
+3. DB::WriteBufferFromPocoSocket::nextImpl() @ 0x00000000137c8a9a
+4. DB::WriteBuffer::next() @ 0x000000000ca50c1e
+5. DB::TCPHandler::sendData(DB::QueryState&, DB::Block const&) @ 0x0000000019c81718
+6. DB::TCPHandler::runImpl() @ 0x0000000019c62aa2
+7. DB::TCPHandler::run() @ 0x0000000019c84599
+8. Poco::Net::TCPServerConnection::start() @ 0x000000001f1b62c7
+9. Poco::Net::TCPServerDispatcher::run() @ 0x000000001f1b6759
+10. Poco::PooledThread::run() @ 0x000000001f17cdc7
+11. Poco::ThreadImpl::runnableEntry(void*) @ 0x000000001f17b1c1
+12. ? @ 0x0000000000094ac3
+13. ? @ 0x0000000000125a84
+ (version 25.8.18.1 (official build))
+2026.03.07 06:04:52.728719 [ 107 ] {f39ce75f-029e-41a9-8fb6-4d63b9e6d2ad} <Error> executeQuery: Code: 210. DB::NetException: I/O error: Broken pipe, while writing to socket (127.0.0.1:9000 -> 127.0.0.1:39690). (NETWORK_ERROR) (version 25.8.18.1 (official build)) (from 127.0.0.1:39690) (query 1, line 1) (in query: SELECT 1), Stack trace (when copying this message, always include the lines below):
+
+0. DB::Exception::Exception(DB::Exception::MessageMasked&&, int, bool) @ 0x000000001359985f
+1. DB::Exception::Exception(String&&, int, String, bool) @ 0x000000000ca41a4e
+2. DB::NetException::NetException<String, String, String>(int, FormatStringHelperImpl<std::type_identity<String>::type, std::type_identity<String>::type, std::type_identity<String>::type>, String&&, String&&, String&&) @ 0x00000000137c7d73
+3. DB::WriteBufferFromPocoSocket::nextImpl() @ 0x00000000137c8a9a
+4. DB::WriteBuffer::next() @ 0x000000000ca50c1e
+5. DB::TCPHandler::sendData(DB::QueryState&, DB::Block const&) @ 0x0000000019c81718
+6. DB::TCPHandler::runImpl() @ 0x0000000019c62aa2
+7. DB::TCPHandler::run() @ 0x0000000019c84599
+8. Poco::Net::TCPServerConnection::start() @ 0x000000001f1b62c7
+9. Poco::Net::TCPServerDispatcher::run() @ 0x000000001f1b6759
+10. Poco::PooledThread::run() @ 0x000000001f17cdc7
+11. Poco::ThreadImpl::runnableEntry(void*) @ 0x000000001f17b1c1
+12. ? @ 0x0000000000094ac3
+13. ? @ 0x0000000000125a84
+
+2026.03.07 06:04:52.889024 [ 107 ] {} <Error> TCPHandler: Code: 210. DB::NetException: I/O error: Broken pipe, while writing to socket (127.0.0.1:9000 -> 127.0.0.1:39690). (NETWORK_ERROR), Stack trace (when copying this message, always include the lines below):
+
+0. DB::Exception::Exception(DB::Exception::MessageMasked&&, int, bool) @ 0x000000001359985f
+1. DB::Exception::Exception(String&&, int, String, bool) @ 0x000000000ca41a4e
+2. DB::NetException::NetException<String, String, String>(int, FormatStringHelperImpl<std::type_identity<String>::type, std::type_identity<String>::type, std::type_identity<String>::type>, String&&, String&&, String&&) @ 0x00000000137c7d73
+3. DB::WriteBufferFromPocoSocket::nextImpl() @ 0x00000000137c8a9a
+4. DB::WriteBuffer::next() @ 0x000000000ca50c1e
+5. DB::TCPHandler::sendData(DB::QueryState&, DB::Block const&) @ 0x0000000019c81718
+6. DB::TCPHandler::runImpl() @ 0x0000000019c62aa2
+7. DB::TCPHandler::run() @ 0x0000000019c84599
+8. Poco::Net::TCPServerConnection::start() @ 0x000000001f1b62c7
+9. Poco::Net::TCPServerDispatcher::run() @ 0x000000001f1b6759
+10. Poco::PooledThread::run() @ 0x000000001f17cdc7
+11. Poco::ThreadImpl::runnableEntry(void*) @ 0x000000001f17b1c1
+12. ? @ 0x0000000000094ac3
+13. ? @ 0x0000000000125a84
+
+/entrypoint.sh: running /docker-entrypoint-initdb.d/init-db.sql
+
+
+Processing configuration file '/etc/clickhouse-server/config.xml'.
+Merging configuration file '/etc/clickhouse-server/config.d/cascata.xml'.
+Merging configuration file '/etc/clickhouse-server/config.d/docker_related_config.xml'.
+Logging warning to /var/log/clickhouse-server/clickhouse-server.log
+Logging errors to /var/log/clickhouse-server/clickhouse-server.err.log
+2026.03.07 06:05:20.675616 [ 1 ] {} <Warning> Context: Linux transparent hugepages are set to "always". Check /sys/kernel/mm/transparent_hugepage/enabled
+2026.03.07 06:05:20.679697 [ 1 ] {} <Warning> Context: Delay accounting is not enabled, OSIOWaitMicroseconds will not be gathered. You can enable it using `sudo sh -c 'echo 1 > /proc/sys/kernel/task_delayacct'` or by using sysctl.
+2026.03.07 06:05:23.159785 [ 1 ] {} <Warning> Application: Listen [::]:8123 failed: Poco::Exception. Code: 1000, e.code() = 0, DNS error: EAI: Address family for hostname not supported (version 25.8.18.1 (official build)). If it is an IPv6 or IPv4 address and your host has disabled IPv6 or IPv4, then consider to specify not disabled IPv4 or IPv6 address to listen in <listen_host> element of configuration file. Example for disabled IPv6: <listen_host>0.0.0.0</listen_host> . Example for disabled IPv4: <listen_host>::</listen_host>
+2026.03.07 06:05:23.160041 [ 1 ] {} <Warning> Application: Listen [::]:9000 failed: Poco::Exception. Code: 1000, e.code() = 0, DNS error: EAI: Address family for hostname not supported (version 25.8.18.1 (official build)). If it is an IPv6 or IPv4 address and your host has disabled IPv6 or IPv4, then consider to specify not disabled IPv4 or IPv6 address to listen in <listen_host> element of configuration file. Example for disabled IPv6: <listen_host>0.0.0.0</listen_host> . Example for disabled IPv4: <listen_host>::</listen_host>
+2026.03.07 06:05:23.160170 [ 1 ] {} <Warning> Application: Listen [::]:9004 failed: Poco::Exception. Code: 1000, e.code() = 0, DNS error: EAI: Address family for hostname not supported (version 25.8.18.1 (official build)). If it is an IPv6 or IPv4 address and your host has disabled IPv6 or IPv4, then consider to specify not disabled IPv4 or IPv6 address to listen in <listen_host> element of configuration file. Example for disabled IPv6: <listen_host>0.0.0.0</listen_host> . Example for disabled IPv4: <listen_host>::</listen_host>
+2026.03.07 06:05:23.160247 [ 1 ] {} <Warning> Application: Listen [::]:9005 failed: Poco::Exception. Code: 1000, e.code() = 0, DNS error: EAI: Address family for hostname not supported (version 25.8.18.1 (official build)). If it is an IPv6 or IPv4 address and your host has disabled IPv6 or IPv4, then consider to specify not disabled IPv4 or IPv6 address to listen in <listen_host> element of configuration file. Example for disabled IPv6: <listen_host>0.0.0.0</listen_host> . Example for disabled IPv4: <listen_host>::</listen_host>
+=========================================
+=== 3. YUGABYTEDB — DIAGNÓSTICO PROFUNDO ===
+=========================================
+--- a) Motivo da morte do container (Docker Inspect OOM/CGroup) ---
+"OOMKilled":false
+2
+--- b) Logs do Wrapper Python (Stdout/Stderr) ---
+  status                  Print status of YugabyteDB cluster.
+  version                 Release version of YugabyteDB cluster.
+  finalize_upgrade        Finalize the upgrade process for the YugabyteDB cluster.
+  collect_logs            Collect and package logs for troubleshooting.
+  connect                 Connect to YugabyteDB cluster through the CLI.
+  demo                    Load and interact with preset demo data.
+  cert                    Generate SSL certificates
+  configure               Configure data placement, toggle encryption at rest or run point-in-time recovery operations on the cluster.
+  configure_read_replica  Configure/Modify/Delete a read replica cluster.
+  upgrade                 Upgrade YugabyteDB processes in this node.
+  xcluster                Operations for xcluster replication between 2 clusters.
+
+Flags:
+  -h, --help              show this help message and exit
+
+Run 'yugabyted [command] -h' for help with specific commands.
++--------------------------------------------------------------------------------------------------+
+|                                  Yugabyted CLI: YugabyteDB command line                                   |
++--------------------------------------------------------------------------------------------------+
+YugabyteDB command-line interface for creating and configuring YugabyteDB cluster.
+
+Usage: yugabyted [command] [flags]
+
+To start YugabyteDB cluster, run 'yugabyted start'.
+
+Find more information at: https://docs.yugabyte.com/preview/reference/configuration/yugabyted/
+
+Commands:
+  start                   Start YugabyteDB cluster.
+  stop                    Stop running YugabyteDB cluster.
+  destroy                 Destroy YugabyteDB cluster and remove data.
+  backup                  Back up a database.
+  restore                 Restore a database.
+  status                  Print status of YugabyteDB cluster.
+  version                 Release version of YugabyteDB cluster.
+  finalize_upgrade        Finalize the upgrade process for the YugabyteDB cluster.
+  collect_logs            Collect and package logs for troubleshooting.
+  connect                 Connect to YugabyteDB cluster through the CLI.
+  demo                    Load and interact with preset demo data.
+  cert                    Generate SSL certificates
+  configure               Configure data placement, toggle encryption at rest or run point-in-time recovery operations on the cluster.
+  configure_read_replica  Configure/Modify/Delete a read replica cluster.
+  upgrade                 Upgrade YugabyteDB processes in this node.
+  xcluster                Operations for xcluster replication between 2 clusters.
+
+Flags:
+  -h, --help              show this help message and exit
+
+Run 'yugabyted [command] -h' for help with specific commands.
+Error: unrecognized arguments: --ysql_pg_conf=/etc/yugabyte/postgresql.conf.
+--- c) Logs do Daemon YB-MASTER Interno ---
+Error response from daemon: Container b9b25a67f15843e70f5f338e2521627d8ceadcf471c8df4efb27ab908c022192 is restarting, wait until the container is running
+--- d) Logs do Daemon YB-TSERVER Interno ---
+Error response from daemon: Container b9b25a67f15843e70f5f338e2521627d8ceadcf471c8df4efb27ab908c022192 is restarting, wait until the container is running
+[ec2-user@ip-172-26-10-78 ~]$ 

@@ -32,8 +32,8 @@ LABEL cascata.extensions.cat2="pg_cron"
 # Extensão Cat.4 (pgvector) — BLOQUEADA em todas as imagens.
 # -------------------------------------------------------
 
-# Configurar shared_preload_libraries
-# Agora delegado para o docker-compose através de volume postgresql.conf
+# pg_cron e pgaudit precisam estar no preload para funcionar
+# (Movido para o docker-compose.shelter.yml via flagfile blindado para evitar crash no wrapper Python)
 # Nenhuma ferramenta de compilação presente neste stage.
 
 # O entrypoint do YugabyteDB é herdado da imagem base
